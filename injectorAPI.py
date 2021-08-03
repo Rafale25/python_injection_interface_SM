@@ -140,13 +140,15 @@ class Input:
 		self.value = new_value
 
 	def get_value(self):
-		return map_range(
-			self.value,
-			self.var_min1.get(),
-			self.var_max1.get(),
-			self.var_min2.get(),
-			self.var_max2.get()
-		)
+		if type in ('axis', 'numball'):
+			return map_range(
+				self.value,
+				self.var_min1.get(),
+				self.var_max1.get(),
+				self.var_min2.get(),
+				self.var_max2.get()
+			)
+		return self.value
 
 	def get_peer_id(self):
 		return self.var_peer_id.get()
