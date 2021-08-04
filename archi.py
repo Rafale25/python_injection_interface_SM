@@ -77,6 +77,10 @@ class Input:
 
 		self.type = type
 		self.value = 0
+		self.check_box = tk.IntVar()
+
+	def __str__(self):
+		return "{} {}".format(self.type, self.id)
 
 	def update(self):
 		new_value = 0
@@ -95,6 +99,29 @@ class Input:
 class InputController:
 	def __init__(self):
 		self.inputs = []
+
+		self.joystick_count = 0
+		self.joysticks = []
+
+	def scan_joysticks(self):
+		self.joystick_count = pygame.joystick.get_count()
+		self.joysticks = [pygame.joystick.Joystick(i) for i in range(self.joystick_count)]
+
+	def init_inputs(self):
+		for joystick in self.joysticks:
+			print(joystick)
+			for i in range(joystick.get_numballs()):
+				inp = Input(joystick=joystick, id=i, type="numball")
+				self.inputs.append(inp)
+			for i in range(joystick.get_numaxes()):
+				inp = Input(joystick=joystick, id=i, type="axis")
+				self.inputs.append(inp)
+			for i in range(joystick.get_numbuttons()):
+				inp = Input(joystick=joystick, id=i, type="button")
+				self.inputs.append(inp)
+			for i in range(joystick.get_numhats()):
+				inp = Input(joystick=joystick, id=i, type="hat")
+				self.inputs.append(inp)
 
 	def update(self):
 		for inp in self.inputs:
@@ -120,6 +147,7 @@ class ModuleController:
 		pass
 
 
+
 # OUTPUTS --
 class Output:
 	def __init__(self):
@@ -143,7 +171,7 @@ class InjectionUI(tk.Tk):
 
 		self.minsize(200, 100)
 
-		self.main_frame = tk.Frame(self, borderwidth= 5, relief="raised")
+		self.main_frame = tk.Frame(self, borderwidth=5, relief="raised")
 		self.main_frame.pack(expand=True, fill="both")
 
 		self.frame_inputs = tk.Frame(self.main_frame, borderwidth=5, relief="raised")
@@ -158,17 +186,30 @@ class InjectionUI(tk.Tk):
 		self.frame_modules.grid_propagate(0)
 		self.frame_outputs.grid_propagate(0)
 
-		for i in range(4):
-			e = tk.Label(self.frame_inputs, text="input {}".format(i))
-			e.pack()
+		self.tk_inputs = []
 
-		for i in range(4):
-			e = tk.Label(self.frame_modules, text="module {}".format(i))
-			e.pack()
+		# self.create_inputs_ui(module_controller)
+		# self.create_inputs_ui(output_controller)
 
-		for i in range(4):
-			e = tk.Label(self.frame_outputs, text="peer {}".format(i))
-			e.pack()
+	def create_inputs_ui(self, input_controller):
+		tmp = []
+
+		print('HEY')
+
+		print(input_controller.inputs)
+
+		for inp in input_controller.inputs:
+			print('HEY', inp)
+
+			line = tk.Checkbutton(text=str(inp), variable=inp.check_box)
+			line.pack()
+			tmp.append(line)
+
+		self.tk_inputs = tmp
+
+		# for i in range(4):
+		# 	e = tk.Label(self.frame_inputs, text="input {}".format(i))
+		# 	e.pack()
 
 	def update_tk(self):
 		self.update_idletasks()
@@ -177,12 +218,20 @@ class InjectionUI(tk.Tk):
 # MAIN CLASS
 class InjectionApp:
 	def __init__(self):
-		self.injectionAPI = InjectionAPI()
-		self.injectionUI = InjectionUI()
-
 		self.input_controller = InputController()
 		self.module_controller = ModuleController()
 		self.output_controller = OutputController()
+
+		self.injectionAPI = InjectionAPI()
+		self.injectionUI = InjectionUI()
+
+		pygame.init()
+		pygame.joystick.init()
+
+	def initialize(self):
+		self.input_controller.scan_joysticks()
+		self.input_controller.init_inputs()
+		self.injectionUI.create_inputs_ui(self.input_controller)
 
 	def run(self):
 		while True:
@@ -192,6 +241,7 @@ class InjectionApp:
 
 def main():
 	app = InjectionApp()
+	app.initialize()
 	app.run()
 
 if __name__ == '__main__':
