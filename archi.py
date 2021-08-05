@@ -109,7 +109,6 @@ class InputController:
 
 	def init_inputs(self):
 		for joystick in self.joysticks:
-			print(joystick)
 			for i in range(joystick.get_numballs()):
 				inp = Input(joystick=joystick, id=i, type="numball")
 				self.inputs.append(inp)
@@ -131,6 +130,7 @@ class InputController:
 # MODULES --
 class Module:
 	def __init__(self):
+		self.name = None
 		self.inputs = dict() #{string, Input}
 
 	def compute(self): # -> dict({string, value})
@@ -138,6 +138,16 @@ class Module:
 
 	def get_scheme(self): # -> list[string]
 		pass
+
+# class ModuleWidget(tk.Frame):
+# 	def __init__(self, module, *args, **kwaargs):
+# 		super().__init__(*args, **kwaargs)
+#
+# 		self.module = module
+#
+# 		self.frame_inputs = tk.Frame() # OptionMenu
+# 		self.frame_outputs = tk.Frame() # Labels
+
 
 class ModuleController:
 	def __init__(self):
@@ -182,26 +192,16 @@ class InjectionUI(tk.Tk):
 		self.frame_modules.grid(row=0, column=1)
 		self.frame_outputs.grid(row=0, column=2)
 
-		self.frame_inputs.grid_propagate(0)
-		self.frame_modules.grid_propagate(0)
-		self.frame_outputs.grid_propagate(0)
-
 		self.tk_inputs = []
-
-		# self.create_inputs_ui(module_controller)
-		# self.create_inputs_ui(output_controller)
+		# self.tk_modules = []
+		# self.tk_outputs = []
 
 	def create_inputs_ui(self, input_controller):
 		tmp = []
 
-		print('HEY')
-
-		print(input_controller.inputs)
-
 		for inp in input_controller.inputs:
-			print('HEY', inp)
 
-			line = tk.Checkbutton(text=str(inp), variable=inp.check_box)
+			line = tk.Checkbutton(self.frame_inputs, text=str(inp), variable=inp.check_box)
 			line.pack()
 			tmp.append(line)
 
@@ -245,7 +245,26 @@ def main():
 	app.run()
 
 if __name__ == '__main__':
-	main()
+	# main()
+
+
+
+	# code to import class dynamcly and instantiate them
+	import importlib
+	import os
+
+	modules_names = [path.split('.')[0] for path in os.listdir("./modules") if path[-2:] == "py"]
+	modules_classes = []
+
+	for name in modules_names:
+		module = importlib.import_module("modules.{}".format(name))
+		ModuleClass = getattr(module, name)
+		modules_classes.append(ModuleClass)
+
+	print(modules_classes)
+
+	droneModule = modules_classes[0]()
+	print( droneModule.compute() )
 
 """
 Input:
