@@ -3,12 +3,23 @@ import socket
 import subprocess
 import time
 
+import importlib
+import os
+
 import tkinter as tk
 from tkinter import ttk
 
 from functools import partial
 
 import pygame
+
+from widgets import InputWidget, ModuleWidget, OutputWidget
+
+def cast_to_type(value, type):
+	if type == 'float': return float(value)
+	if type == 'int': return int(value)
+	if type == 'tuple': return tuple(value)
+	return value
 
 # injectionAPI
 class InjectionAPI:
@@ -65,10 +76,10 @@ class InjectionAPI:
 # INPUTS --
 class Input:
 	INPUT_TYPE = {
-		'numball': float,
-		'axis': float,
-		'button': int,
-		'hat': tuple,
+		'numball': 'float',
+		'axis': 'float',
+		'button': 'int',
+		'hat': 'tuple',
 	}
 
 	def __init__(self, joystick, id, type):
@@ -94,7 +105,7 @@ class Input:
 		elif self.type == 'hat':
 			new_value = self.joystick.get_hat(self.id)
 
-		self.value = Input.INPUT_TYPE[self.type](new_value)
+		self.value = cast_to_type(new_value, Input.INPUT_TYPE[self.type])
 
 class InputController:
 	def __init__(self):
@@ -131,23 +142,14 @@ class InputController:
 class Module:
 	def __init__(self):
 		self.name = None
-		self.inputs = dict() #{string, Input}
+		self.inputs = dict() #{string, variable_type}
+		# self.inputs = dict() #{string, Input}
 
 	def compute(self): # -> dict({string, value})
 		pass
 
 	def get_scheme(self): # -> list[string]
 		pass
-
-# class ModuleWidget(tk.Frame):
-# 	def __init__(self, module, *args, **kwaargs):
-# 		super().__init__(*args, **kwaargs)
-#
-# 		self.module = module
-#
-# 		self.frame_inputs = tk.Frame() # OptionMenu
-# 		self.frame_outputs = tk.Frame() # Labels
-
 
 class ModuleController:
 	def __init__(self):
@@ -193,23 +195,21 @@ class InjectionUI(tk.Tk):
 		self.frame_outputs.grid(row=0, column=2)
 
 		self.tk_inputs = []
-		# self.tk_modules = []
-		# self.tk_outputs = []
+		self.tk_modules = []
+		self.tk_outputs = []
 
 	def create_inputs_ui(self, input_controller):
-		tmp = []
-
 		for inp in input_controller.inputs:
+			widget = InputWidget("{} {}".format(inp.type, inp.id), inp.check_box, self.frame_inputs)
+			widget.pack()
 
-			line = tk.Checkbutton(self.frame_inputs, text=str(inp), variable=inp.check_box)
-			line.pack()
-			tmp.append(line)
+			self.tk_inputs.append(widget)
 
-		self.tk_inputs = tmp
+	def create_modules_ui(self, module_controller):
+		pass
 
-		# for i in range(4):
-		# 	e = tk.Label(self.frame_inputs, text="input {}".format(i))
-		# 	e.pack()
+	def create_outputs_ui(self, output_controller):
+		pass
 
 	def update_tk(self):
 		self.update_idletasks()
@@ -245,26 +245,21 @@ def main():
 	app.run()
 
 if __name__ == '__main__':
-	# main()
+	main()
 
-
-
-	# code to import class dynamcly and instantiate them
-	import importlib
-	import os
-
-	modules_names = [path.split('.')[0] for path in os.listdir("./modules") if path[-2:] == "py"]
-	modules_classes = []
-
-	for name in modules_names:
-		module = importlib.import_module("modules.{}".format(name))
-		ModuleClass = getattr(module, name)
-		modules_classes.append(ModuleClass)
-
-	print(modules_classes)
-
-	droneModule = modules_classes[0]()
-	print( droneModule.compute() )
+	# code to import class dynamicly and instantiate them
+	# modules_names = [path.split('.')[0] for path in os.listdir("./modules") if path[-2:] == "py"]
+	# modules_classes = []
+	#
+	# for name in modules_names:
+	# 	module = importlib.import_module("modules.{}".format(name))
+	# 	ModuleClass = getattr(module, name)
+	# 	modules_classes.append(ModuleClass)
+	#
+	# print(modules_classes)
+	#
+	# droneModule = modules_classes[0]()
+	# print( droneModule.compute() )
 
 """
 Input:
