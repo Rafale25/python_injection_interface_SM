@@ -5,6 +5,7 @@ class InputWidget(tk.Frame):
 	def __init__(self, name, intvar, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
+		# add variable type (float, int, tuple) in a way or another
 		self.name = tk.Label(self, text=name)
 		self.check_box = tk.Checkbutton(self, variable=intvar)
 
@@ -24,8 +25,11 @@ class ModuleWidget(tk.Frame):
 		self.frame_inputs.grid(row=0, column=0)
 		self.frame_outputs.grid(row=0, column=1)
 
-
-		# for inp in self.module.inputs:
+		self.input_options = dict() #{entry_name, optionMenu}
+		# listeOptions = ('train', 'avion', 'bateau')
+		# v = StringVar()
+		# v.set(listeOptions[0])
+		# om = OptionMenu(root, v, *listeOptions)
 
 class OutputWidget(tk.Frame):
 	pass

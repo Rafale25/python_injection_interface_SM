@@ -15,11 +15,11 @@ import pygame
 
 from widgets import InputWidget, ModuleWidget, OutputWidget
 
-def cast_to_type(value, type):
-	if type == 'float': return float(value)
-	if type == 'int': return int(value)
-	if type == 'tuple': return tuple(value)
-	return value
+# def cast_to_type(value, type):
+# 	if type == 'float': return float(value)
+# 	if type == 'int': return int(value)
+# 	if type == 'tuple': return tuple(value)
+# 	return value
 
 # injectionAPI
 class InjectionAPI:
@@ -75,37 +75,35 @@ class InjectionAPI:
 
 # INPUTS --
 class Input:
-	INPUT_TYPE = {
-		'numball': 'float',
-		'axis': 'float',
-		'button': 'int',
-		'hat': 'tuple',
-	}
+	# INPUT_TYPE = {
+	# 	'numball': 'float',
+	# 	'axis': 'float',
+	# 	'button': 'int',
+	# 	'hat': 'tuple',
+	# }
 
-	def __init__(self, joystick, id, type):
+	def __init__(self, joystick, id, input_type):
 		self.joystick = joystick
 		self.id = id
 
-		self.type = type
+		self.input_type = input_type
 		self.value = 0
 		self.check_box = tk.IntVar()
-
-	def __str__(self):
-		return "{} {}".format(self.type, self.id)
 
 	def update(self):
 		new_value = 0
 
-		if self.type == 'numball':
+		if self.input_type == 'numball':
 			new_value = self.joystick.get_ball(self.id)
-		elif self.type == 'axis':
+		elif self.input_type == 'axis':
 			new_value = self.joystick.get_axis(self.id)
-		elif self.type == 'button':
+		elif self.input_type == 'button':
 			new_value = self.joystick.get_button(self.id)
-		elif self.type == 'hat':
+		elif self.input_type == 'hat':
 			new_value = self.joystick.get_hat(self.id)
 
-		self.value = cast_to_type(new_value, Input.INPUT_TYPE[self.type])
+		# self.value = cast_to_type(new_value, Input.INPUT_TYPE[self.input_type])
+		self.value = new_value
 
 class InputController:
 	def __init__(self):
@@ -121,16 +119,16 @@ class InputController:
 	def init_inputs(self):
 		for joystick in self.joysticks:
 			for i in range(joystick.get_numballs()):
-				inp = Input(joystick=joystick, id=i, type="numball")
+				inp = Input(joystick=joystick, id=i, input_type="numball")
 				self.inputs.append(inp)
 			for i in range(joystick.get_numaxes()):
-				inp = Input(joystick=joystick, id=i, type="axis")
+				inp = Input(joystick=joystick, id=i, input_type="axis")
 				self.inputs.append(inp)
 			for i in range(joystick.get_numbuttons()):
-				inp = Input(joystick=joystick, id=i, type="button")
+				inp = Input(joystick=joystick, id=i, input_type="button")
 				self.inputs.append(inp)
 			for i in range(joystick.get_numhats()):
-				inp = Input(joystick=joystick, id=i, type="hat")
+				inp = Input(joystick=joystick, id=i, input_type="hat")
 				self.inputs.append(inp)
 
 	def update(self):
@@ -141,14 +139,28 @@ class InputController:
 # MODULES --
 class Module:
 	def __init__(self):
-		self.name = None
-		self.inputs = dict() #{string, variable_type}
-		# self.inputs = dict() #{string, Input}
+		self._name = None
+		# self._inputs = dict() #{string, variable_type}
+		self._inputs_name = dict()
+		self._inputs = dict() #{string, Input}
 
-	def compute(self): # -> dict({string, value})
+	def set_name(self, str):
+		self._name = str
+
+	def add_input(self, key):
+		self._inputs_name = type
+
+	def get_input(self, key):
+		return self._inputs[key]
+
+	def add_output(self):
+
 		pass
 
-	def get_scheme(self): # -> list[string]
+	def set_output(self):
+		pass
+
+	def compute(self): # -> dict({string, value})
 		pass
 
 class ModuleController:
@@ -156,8 +168,8 @@ class ModuleController:
 		self.modules = dict() #{string, Module}
 
 	def compute(self):
-		pass
-
+		for module in self.modules:
+			module.compute()
 
 
 # OUTPUTS --
@@ -200,7 +212,7 @@ class InjectionUI(tk.Tk):
 
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.inputs:
-			widget = InputWidget("{} {}".format(inp.type, inp.id), inp.check_box, self.frame_inputs)
+			widget = InputWidget("{} {}".format(inp.input_type, inp.id), inp.check_box, self.frame_inputs)
 			widget.pack()
 
 			self.tk_inputs.append(widget)
@@ -248,18 +260,18 @@ if __name__ == '__main__':
 	main()
 
 	# code to import class dynamicly and instantiate them
-	# modules_names = [path.split('.')[0] for path in os.listdir("./modules") if path[-2:] == "py"]
-	# modules_classes = []
-	#
-	# for name in modules_names:
-	# 	module = importlib.import_module("modules.{}".format(name))
-	# 	ModuleClass = getattr(module, name)
-	# 	modules_classes.append(ModuleClass)
-	#
-	# print(modules_classes)
-	#
-	# droneModule = modules_classes[0]()
-	# print( droneModule.compute() )
+	modules_names = [path.split('.')[0] for path in os.listdir("./modules") if path[-2:] == "py"]
+	modules_classes = []
+
+	for name in modules_names:
+		module = importlib.import_module("modules.{}".format(name))
+		ModuleClass = getattr(module, name)
+		modules_classes.append(ModuleClass)
+
+	print(modules_classes)
+
+	droneModule = modules_classes[0]()
+	print( droneModule.compute() )
 
 """
 Input:
