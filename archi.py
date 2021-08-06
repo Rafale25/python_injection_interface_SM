@@ -140,32 +140,49 @@ class InputController:
 class Module:
 	def __init__(self):
 		self._name = None
-		# self._inputs = dict() #{string, variable_type}
-		self._inputs_name = dict()
 		self._inputs = dict() #{string, Input}
+		self._outputs = dict() #{string, value}
 
 	def set_name(self, str):
 		self._name = str
 
 	def add_input(self, key):
-		self._inputs_name = type
+		self._inputs[key] = None
 
 	def get_input(self, key):
 		return self._inputs[key]
 
-	def add_output(self):
+	def add_output(self, key):
+		self._outputs[key] = 0
 
-		pass
+	def set_output(self, key, value):
+		self._outputs[key] = value
 
-	def set_output(self):
-		pass
-
-	def compute(self): # -> dict({string, value})
+	def compute(self):
 		pass
 
 class ModuleController:
+	MODULE_FOLDER_PATH = "./modules"
+
 	def __init__(self):
-		self.modules = dict() #{string, Module}
+		# self.modules = dict() #{string, Module}
+		self.modules_classes = []
+		self.module_instances = []
+
+	#TODO: Need to finish the ModuleWidget before
+	def create_modules_dynamically(self):
+		# code to import class dynamicly and instantiate them
+		modules_names = [path.split('.')[0] for path in os.listdir(ModuleController.MODULE_FOLDER_PATH) if path[-2:] == "py"]
+
+		for name in modules_names:
+			module = importlib.import_module("modules.{}".format(name))
+			ModuleClass = getattr(module, name)
+			self.modules_classes.append(ModuleClass)
+
+		# print(modules_classes)
+
+		# droneModule = modules_classes[0]()
+		# print( droneModule.compute() )
 
 	def compute(self):
 		for module in self.modules:
@@ -259,19 +276,7 @@ def main():
 if __name__ == '__main__':
 	main()
 
-	# code to import class dynamicly and instantiate them
-	modules_names = [path.split('.')[0] for path in os.listdir("./modules") if path[-2:] == "py"]
-	modules_classes = []
 
-	for name in modules_names:
-		module = importlib.import_module("modules.{}".format(name))
-		ModuleClass = getattr(module, name)
-		modules_classes.append(ModuleClass)
-
-	print(modules_classes)
-
-	droneModule = modules_classes[0]()
-	print( droneModule.compute() )
 
 """
 Input:
