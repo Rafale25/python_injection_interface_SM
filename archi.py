@@ -90,6 +90,9 @@ class Input:
 		self.value = 0
 		self.check_box = tk.IntVar()
 
+	def __str__(self):
+		return "{} {}".format(self.input_type, self.id)
+
 	def update(self):
 		new_value = 0
 
@@ -131,6 +134,9 @@ class InputController:
 				inp = Input(joystick=joystick, id=i, input_type="hat")
 				self.inputs.append(inp)
 
+	def get_inputs(self):
+		return self.inputs
+
 	def update(self):
 		for inp in self.inputs:
 			inp.update()
@@ -146,11 +152,20 @@ class Module:
 	def set_name(self, str):
 		self._name = str
 
+	def get_name(self):
+		return self._name
+
+	def get_inputs(self):
+		return self._inputs
+
 	def add_input(self, key):
 		self._inputs[key] = None
 
 	def get_input(self, key):
 		return self._inputs[key]
+
+	def get_outputs(self):
+		return self._outputs
 
 	def add_output(self, key):
 		self._outputs[key] = 0
@@ -169,9 +184,11 @@ class ModuleController:
 		self.modules_classes = []
 		self.module_instances = []
 
-	#TODO: Need to finish the ModuleWidget before
+	def get_modules(self):
+		return self.module_instances
+
 	def create_modules_dynamically(self):
-		# code to import class dynamicly and instantiate them
+		# import class dynamically and instantiate them
 		modules_names = [path.split('.')[0] for path in os.listdir(ModuleController.MODULE_FOLDER_PATH) if path[-2:] == "py"]
 
 		for name in modules_names:
@@ -179,10 +196,10 @@ class ModuleController:
 			ModuleClass = getattr(module, name)
 			self.modules_classes.append(ModuleClass)
 
-		# print(modules_classes)
-
-		# droneModule = modules_classes[0]()
-		# print( droneModule.compute() )
+		# TODO: Remove later
+		# create an instance of every class/module
+		for ModuleCLass in self.modules_classes:
+			self.module_instances.append( ModuleCLass() )
 
 	def compute(self):
 		for module in self.modules:
@@ -207,35 +224,49 @@ class OutputController:
 
 # tkinter Window
 class InjectionUI(tk.Tk):
+	COLUMN_WIDTH = 100
+	COLUMN_BORDE_WIDTH = 3
+	COLUMN_PADX = 10
+
+	COLUMN_SIZE = COLUMN_WIDTH + COLUMN_BORDE_WIDTH + COLUMN_PADX
+
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-		self.minsize(200, 100)
+		self.minsize(InjectionUI.COLUMN_SIZE*3, 100)
 
 		self.main_frame = tk.Frame(self, borderwidth=5, relief="raised")
 		self.main_frame.pack(expand=True, fill="both")
 
-		self.frame_inputs = tk.Frame(self.main_frame, borderwidth=5, relief="raised")
-		self.frame_modules = tk.Frame(self.main_frame, borderwidth=5, relief="raised")
-		self.frame_outputs = tk.Frame(self.main_frame, borderwidth=5, relief="raised")
+		self.frame_inputs = tk.Frame(self.main_frame, borderwidth=3, padx=10, relief="raised")
+		self.frame_modules = tk.Frame(self.main_frame, borderwidth=3, padx=10, relief="raised")
+		self.frame_outputs = tk.Frame(self.main_frame, borderwidth=3, padx=10, relief="raised")
 
-		self.frame_inputs.grid(row=0, column=0)
-		self.frame_modules.grid(row=0, column=1)
-		self.frame_outputs.grid(row=0, column=2)
+		self.frame_inputs.grid(row=0, column=0, sticky="NESW")
+		self.frame_modules.grid(row=0, column=1, sticky="NESW")
+		self.frame_outputs.grid(row=0, column=2, sticky="NESW")
+
+		# give minimul width to columns
+		for i in range(3):
+			self.main_frame.grid_columnconfigure(i, minsize=100, weight=1)
 
 		self.tk_inputs = []
 		self.tk_modules = []
 		self.tk_outputs = []
 
 	def create_inputs_ui(self, input_controller):
-		for inp in input_controller.inputs:
+		for inp in input_controller.get_inputs():
 			widget = InputWidget("{} {}".format(inp.input_type, inp.id), inp.check_box, self.frame_inputs)
 			widget.pack()
 
 			self.tk_inputs.append(widget)
 
-	def create_modules_ui(self, module_controller):
-		pass
+	def create_modules_ui(self, input_controller, module_controller):
+		for module in module_controller.get_modules():
+			widget = ModuleWidget(module, input_controller.get_inputs(), self.frame_modules)
+			widget.pack()
+
+			self.tk_modules.append(widget)
 
 	def create_outputs_ui(self, output_controller):
 		pass
@@ -260,7 +291,11 @@ class InjectionApp:
 	def initialize(self):
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
+
+		self.module_controller.create_modules_dynamically()
+
 		self.injectionUI.create_inputs_ui(self.input_controller)
+		self.injectionUI.create_modules_ui(self.input_controller, self.module_controller)
 
 	def run(self):
 		while True:
@@ -275,20 +310,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-
-
-"""
-Input:
-	name check_box
-
-Module:
-	name
-input0 output0
-input1 output1
-input2 output2
-
-Output:
-	peer_id
-module output_name
-"""

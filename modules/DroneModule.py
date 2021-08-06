@@ -17,7 +17,7 @@ class DroneModule(Module):
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-		self.set_name("Drone")
+		self.set_name("Drone Controller")
 
 		self.add_input('thrust')
 		self.add_input('roll')
