@@ -224,23 +224,24 @@ class OutputController:
 
 # tkinter Window
 class InjectionUI(tk.Tk):
-	COLUMN_WIDTH = 100
-	COLUMN_BORDE_WIDTH = 3
-	COLUMN_PADX = 10
+	WIDTH = 100
+	BORDER_WIDTH = 3
+	PADX = 10
 
-	COLUMN_SIZE = COLUMN_WIDTH + COLUMN_BORDE_WIDTH + COLUMN_PADX
+	COLUMN_SIZE = WIDTH + BORDER_WIDTH + PADX
 
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
 		self.minsize(InjectionUI.COLUMN_SIZE*3, 100)
+		self.maxsize(1920, 1080)
 
 		self.main_frame = tk.Frame(self, borderwidth=5, relief="raised")
 		self.main_frame.pack(expand=True, fill="both")
 
-		self.frame_inputs = tk.Frame(self.main_frame, borderwidth=3, padx=10, relief="raised")
-		self.frame_modules = tk.Frame(self.main_frame, borderwidth=3, padx=10, relief="raised")
-		self.frame_outputs = tk.Frame(self.main_frame, borderwidth=3, padx=10, relief="raised")
+		self.frame_inputs = tk.Frame(self.main_frame, borderwidth=InjectionUI.BORDER_WIDTH, padx=InjectionUI.PADX, relief="raised")
+		self.frame_modules = tk.Frame(self.main_frame, borderwidth=InjectionUI.BORDER_WIDTH, padx=InjectionUI.PADX, relief="raised")
+		self.frame_outputs = tk.Frame(self.main_frame, borderwidth=InjectionUI.BORDER_WIDTH, padx=InjectionUI.PADX, relief="raised")
 
 		self.frame_inputs.grid(row=0, column=0, sticky="NESW")
 		self.frame_modules.grid(row=0, column=1, sticky="NESW")
@@ -248,7 +249,7 @@ class InjectionUI(tk.Tk):
 
 		# give minimul width to columns
 		for i in range(3):
-			self.main_frame.grid_columnconfigure(i, minsize=100, weight=1)
+			self.main_frame.grid_columnconfigure(i, minsize=InjectionUI.WIDTH, weight=1)
 
 		self.tk_inputs = []
 		self.tk_modules = []
