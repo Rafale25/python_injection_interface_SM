@@ -17,12 +17,14 @@ class DroneModule(Module):
 		self.add_output("motorSE")
 
 	def compute(self):
-		thrust = self.get_input_value('thrust')
-		roll = self.get_input_value('roll')
-		pitch = self.get_input_value('pitch')
-		yaw = self.get_input_value('yaw')
+		thrust = self.get_input('thrust')
+		roll = self.get_input('roll')
+		pitch = self.get_input('pitch')
+		yaw = self.get_input('yaw')
 
-		self.set_output("motorNW", 42)
-		self.set_output("motorNE", 69)
-		self.set_output("motorSW", 13)
-		self.set_output("motorSE", 34)
+		# Do stuff #
+
+		self.set_output("motorNW", thrust)
+		self.set_output("motorNE", roll)
+		self.set_output("motorSW", pitch)
+		self.set_output("motorSE", yaw)

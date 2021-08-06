@@ -93,6 +93,12 @@ class Input:
 	def __str__(self):
 		return "{} {}".format(self.input_type, self.id)
 
+	def is_on(self):
+		return self.check_box.get()
+
+	def get_value(self):
+		return self.value
+
 	def update(self):
 		new_value = 0
 
@@ -105,7 +111,6 @@ class Input:
 		elif self.input_type == 'hat':
 			new_value = self.joystick.get_hat(self.id)
 
-		# self.value = cast_to_type(new_value, Input.INPUT_TYPE[self.input_type])
 		self.value = new_value
 
 class InputController:
@@ -139,15 +144,18 @@ class InputController:
 
 	def update(self):
 		for inp in self.inputs:
-			inp.update()
+			if inp.is_on():
+				inp.update()
+			else:
+				inp.value = 0
 
 
 # MODULES --
 class Module:
 	def __init__(self):
-		self._name = None
-		self._inputs = dict() #{string, Input}
-		self._outputs = dict() #{string, value}
+		self._name = ""
+		self._inputs = dict() #{key: Input}
+		self._outputs = dict() #{key: value}
 
 	def set_name(self, str):
 		self._name = str
@@ -155,23 +163,26 @@ class Module:
 	def get_name(self):
 		return self._name
 
-	def get_inputs(self):
+	def get_inputs_dict(self):
 		return self._inputs
 
 	def add_input(self, key):
 		self._inputs[key] = None
 
 	def get_input(self, key):
-		return self._inputs[key]
+		if self._inputs[key] != None:
+			return self._inputs[key].get_value()
+		return None
 
-	def get_outputs(self):
+	def get_outputs_dict(self):
 		return self._outputs
 
 	def add_output(self, key):
-		self._outputs[key] = 0
+		self._outputs[key] = tk.DoubleVar()
+		self._outputs[key].set(0)
 
 	def set_output(self, key, value):
-		self._outputs[key] = value
+		self._outputs[key].set(value)
 
 	def compute(self):
 		pass
@@ -202,7 +213,7 @@ class ModuleController:
 			self.module_instances.append( ModuleCLass() )
 
 	def compute(self):
-		for module in self.modules:
+		for module in self.module_instances:
 			module.compute()
 
 
@@ -210,16 +221,17 @@ class ModuleController:
 class Output:
 	def __init__(self):
 		self.inputs = dict() #{string}
-		pass
 
 class OutputController:
 	def __init__(self):
-		# self.injectionAPI = injectionAPI
 		self.outputs = dict() # dict({string, Output})
+
+	def add_output(self):
 		pass
 
-	def send_outputs(self):
+	def send_outputs(self, injectionAPI):
 		pass
+
 
 
 # tkinter Window
@@ -236,7 +248,7 @@ class InjectionUI(tk.Tk):
 		self.minsize(InjectionUI.COLUMN_SIZE*3, 100)
 		self.maxsize(1920, 1080)
 
-		self.main_frame = tk.Frame(self, borderwidth=5, relief="raised")
+		self.main_frame = tk.Frame(self, borderwidth=0, relief="raised")
 		self.main_frame.pack(expand=True, fill="both")
 
 		self.frame_inputs = tk.Frame(self.main_frame, borderwidth=InjectionUI.BORDER_WIDTH, padx=InjectionUI.PADX, relief="raised")
@@ -265,7 +277,7 @@ class InjectionUI(tk.Tk):
 	def create_modules_ui(self, input_controller, module_controller):
 		for module in module_controller.get_modules():
 			widget = ModuleWidget(module, input_controller.get_inputs(), self.frame_modules)
-			widget.pack()
+			widget.pack(fill='x')
 
 			self.tk_modules.append(widget)
 
@@ -301,6 +313,10 @@ class InjectionApp:
 	def run(self):
 		while True:
 			self.injectionUI.update_tk()
+
+			self.input_controller.update()
+			self.module_controller.compute()
+
 			time.sleep(1/40)
 
 

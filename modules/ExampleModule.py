@@ -1,17 +1,17 @@
 from archi import Module
 
-# set_name(string)
-# add_input(string)
-# add_output(string)
-# get_input_value(string)
-# set_output(string, value)
-
 class ExampleModule(Module):
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-		self.set_name("Example")
+		self.set_name("Example Module")
 
+		self.add_input('exampleInput')
+		self.add_output("exampleOutput")
 
 	def compute(self):
-		pass
+		input_value = self.get_input('exampleInput')
+
+		# -- Do stuff here -- #
+
+		self.set_output("exampleOutput", 42)
