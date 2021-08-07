@@ -12,7 +12,6 @@ class InputWidget(tk.Frame):
 		self.name.grid(row=0, column=0)
 		self.check_box.grid(row=0, column=1)
 
-
 class ModuleWidget(tk.LabelFrame):
 	def __init__(self, module, inputs, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
@@ -69,4 +68,19 @@ class ModuleWidget(tk.LabelFrame):
 		self.outputs[key] = 0
 
 class OutputWidget(tk.Frame):
-	pass
+	def __init__(self, output, modules_outputs, *args, **kwaargs):
+		super().__init__(*args, **kwaargs)
+
+
+		self.strVar = tk.StringVar()
+		self.option_menu = tk.OptionMenu(self, self.strVar, *modules_outputs, command=None)
+		self.option_menu.pack(side=tk.LEFT)
+
+		self.peer_id = ttk.Spinbox(
+			self,
+			from_=0,
+			to=32,
+			textvariable=output.id,
+			wrap=True,
+			width=4)
+		self.peer_id.pack(side=tk.RIGHT)

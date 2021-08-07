@@ -163,6 +163,9 @@ class Module:
 	def get_name(self):
 		return self._name
 
+	def get_outputs_keys(self):
+		return [key for key, value in self._outputs.items()]
+
 	def get_inputs_dict(self):
 		return self._inputs
 
@@ -198,6 +201,12 @@ class ModuleController:
 	def get_modules(self):
 		return self.module_instances
 
+	def get_outputs_keys(self):
+		keys = []
+		for module in self.module_instances:
+			keys.extend(module.get_outputs_keys())
+		return keys
+
 	def create_modules_dynamically(self):
 		# import class dynamically and instantiate them
 		modules_names = [path.split('.')[0] for path in os.listdir(ModuleController.MODULE_FOLDER_PATH) if path[-2:] == "py"]
@@ -220,18 +229,20 @@ class ModuleController:
 # OUTPUTS --
 class Output:
 	def __init__(self):
-		self.inputs = dict() #{string}
+		self.inputs = dict() #{key} #from module
+		self.id = tk.IntVar()
+		self.id.set(0)
 
 class OutputController:
 	def __init__(self):
-		self.outputs = dict() # dict({string, Output})
+		# self.outputs = dict() # dict({string, Output})
+		self.outputs = [] # [Output]
 
 	def add_output(self):
 		pass
 
 	def send_outputs(self, injectionAPI):
 		pass
-
 
 
 # tkinter Window
@@ -259,7 +270,7 @@ class InjectionUI(tk.Tk):
 		self.frame_modules.grid(row=0, column=1, sticky="NESW")
 		self.frame_outputs.grid(row=0, column=2, sticky="NESW")
 
-		# give minimul width to columns
+		# give minimum width to columns
 		for i in range(3):
 			self.main_frame.grid_columnconfigure(i, minsize=InjectionUI.WIDTH, weight=1)
 
@@ -281,8 +292,19 @@ class InjectionUI(tk.Tk):
 
 			self.tk_modules.append(widget)
 
-	def create_outputs_ui(self, output_controller):
-		pass
+	def create_outputs_ui(self, module_controller, output_controller):
+		#TODO: replace this by a button to add them dynamically
+		for i in range(8):
+			output = Output()
+			output_controller.outputs.append(output)
+
+		modules_outputs = module_controller.get_outputs_keys()
+		for output in output_controller.outputs:
+			widget = OutputWidget(output, modules_outputs, self.frame_outputs)
+			widget.pack()
+
+			self.tk_outputs.append(widget)
+
 
 	def update_tk(self):
 		self.update_idletasks()
@@ -309,6 +331,7 @@ class InjectionApp:
 
 		self.injectionUI.create_inputs_ui(self.input_controller)
 		self.injectionUI.create_modules_ui(self.input_controller, self.module_controller)
+		self.injectionUI.create_outputs_ui(self.module_controller, self.output_controller)
 
 	def run(self):
 		while True:
