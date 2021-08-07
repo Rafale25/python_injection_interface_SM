@@ -229,9 +229,12 @@ class ModuleController:
 # OUTPUTS --
 class Output:
 	def __init__(self):
-		self.inputs = dict() #{key} #from module
+		self.input_key = tk.StringVar() #key from module
 		self.id = tk.IntVar()
 		self.id.set(0)
+
+	def get_id(self):
+		return self.id.get()
 
 class OutputController:
 	def __init__(self):
@@ -243,6 +246,9 @@ class OutputController:
 
 	def send_outputs(self, injectionAPI):
 		pass
+		# for output in self.outputs:
+		# 	if output.input_key != None:
+		# 		injectionAPI.set_value(output.get_id(), output.)
 
 
 # tkinter Window
@@ -294,7 +300,7 @@ class InjectionUI(tk.Tk):
 
 	def create_outputs_ui(self, module_controller, output_controller):
 		#TODO: replace this by a button to add them dynamically
-		for i in range(8):
+		for i in range(4):
 			output = Output()
 			output_controller.outputs.append(output)
 

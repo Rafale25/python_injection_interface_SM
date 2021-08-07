@@ -71,16 +71,9 @@ class OutputWidget(tk.Frame):
 	def __init__(self, output, modules_outputs, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-
 		self.strVar = tk.StringVar()
 		self.option_menu = tk.OptionMenu(self, self.strVar, *modules_outputs, command=None)
 		self.option_menu.pack(side=tk.LEFT)
 
-		self.peer_id = ttk.Spinbox(
-			self,
-			from_=0,
-			to=32,
-			textvariable=output.id,
-			wrap=True,
-			width=4)
+		self.peer_id = ttk.Spinbox(self, from_=0, to=32, textvariable=output.id, wrap=True, width=4)
 		self.peer_id.pack(side=tk.RIGHT)
