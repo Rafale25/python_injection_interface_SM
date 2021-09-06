@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import struct
 import socket
 import subprocess
@@ -14,12 +16,6 @@ from functools import partial
 import pygame
 
 from widgets import InputWidget, ModuleWidget, OutputWidget
-
-# def cast_to_type(value, type):
-# 	if type == 'float': return float(value)
-# 	if type == 'int': return int(value)
-# 	if type == 'tuple': return tuple(value)
-# 	return value
 
 # injectionAPI
 class InjectionAPI:
@@ -83,35 +79,35 @@ class Input:
 	# }
 
 	def __init__(self, joystick, id, input_type):
-		self.joystick = joystick
-		self.id = id
+		self._joystick = joystick
+		self._id = id
 
-		self.input_type = input_type
-		self.value = 0
-		self.check_box = tk.IntVar()
+		self._input_type = input_type
+		self._value = 0
+		self._check_box = tk.IntVar()
 
 	def __str__(self):
-		return "{} {}".format(self.input_type, self.id)
+		return "{} {}".format(self._input_type, self._id)
 
 	def is_on(self):
-		return self.check_box.get()
+		return self._check_box.get()
 
 	def get_value(self):
-		return self.value
+		return self._value
 
 	def update(self):
 		new_value = 0
 
-		if self.input_type == 'numball':
-			new_value = self.joystick.get_ball(self.id)
-		elif self.input_type == 'axis':
-			new_value = self.joystick.get_axis(self.id)
-		elif self.input_type == 'button':
-			new_value = self.joystick.get_button(self.id)
-		elif self.input_type == 'hat':
-			new_value = self.joystick.get_hat(self.id)
+		if self._input_type == 'numball':
+			new_value = self._joystick.get_ball(self._id)
+		elif self._input_type == 'axis':
+			new_value = self._joystick.get_axis(self._id)
+		elif self._input_type == 'button':
+			new_value = self._joystick.get_button(self._id)
+		elif self._input_type == 'hat':
+			new_value = self._joystick.get_hat(self._id)
 
-		self.value = new_value
+		self._value = new_value
 
 class InputController:
 	def __init__(self):
@@ -141,6 +137,10 @@ class InputController:
 
 	def get_inputs(self):
 		return self.inputs
+
+	def get_inputs_name_id(self):
+		return [f"input{i}" for i in range(4)]
+		# return [str(inp) for inp in self.inputs]
 
 	def update(self):
 		for inp in self.inputs:
@@ -293,7 +293,8 @@ class InjectionUI(tk.Tk):
 
 	def create_modules_ui(self, input_controller, module_controller):
 		for module in module_controller.get_modules():
-			widget = ModuleWidget(module, input_controller.get_inputs(), self.frame_modules)
+			# widget = ModuleWidget(module, input_controller.get_inputs(), self.frame_modules)
+			widget = ModuleWidget(module, input_controller, self.frame_modules)
 			widget.pack(fill='x')
 
 			self.tk_modules.append(widget)
@@ -335,6 +336,7 @@ class InjectionApp:
 
 		self.module_controller.create_modules_dynamically()
 
+		# print(self.input_controller.get_inputs_name_id())
 		self.injectionUI.create_inputs_ui(self.input_controller)
 		self.injectionUI.create_modules_ui(self.input_controller, self.module_controller)
 		self.injectionUI.create_outputs_ui(self.module_controller, self.output_controller)
@@ -356,3 +358,16 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+
+"""
+##lists##
+inputs []
+module_outputs []
+
+##commands##
+checkForController
+loadModule
+link inputs/module_ouput to module_input/output
+
+"""
