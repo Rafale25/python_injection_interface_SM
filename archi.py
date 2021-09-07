@@ -107,6 +107,7 @@ class Input:
 		elif self._input_type == 'hat':
 			new_value = self._joystick.get_hat(self._id)
 
+		new_value = 69
 		self._value = new_value
 
 class InputController:
@@ -153,7 +154,7 @@ class Module:
 	def __init__(self):
 		self._name = ""
 		self._inputs = dict() #{key: Input}
-		self._outputs = dict() #{key: value}
+		self._outputs = dict() #{key: DoubleVar}
 
 	def set_name(self, str):
 		self._name = str
@@ -163,6 +164,9 @@ class Module:
 
 	def get_outputs_keys(self):
 		return [key for key, value in self._outputs.items()]
+
+	def get_outputs(self):
+		return self._outputs
 
 	def get_inputs_dict(self):
 		return self._inputs
@@ -199,6 +203,12 @@ class ModuleController:
 	def get_modules(self):
 		return self.module_instances
 
+	def get_outputs_items(self):
+		items = {}
+		for module in self.module_instances:
+			items.update(module.get_outputs())
+		return items
+
 	def get_outputs_keys(self):
 		keys = []
 		for module in self.module_instances:
@@ -223,13 +233,20 @@ class ModuleController:
 		for module in self.module_instances:
 			module.compute()
 
-
 # OUTPUTS --
 class Output:
 	def __init__(self):
+		self.input = None
 		self.input_key = tk.StringVar() #key from module
 		self.id = tk.IntVar()
 		self.id.set(0)
+
+	def get_value(self, module_controller):
+		module_output_name = self.input_key.get()
+		for m_instance in module_controller.module_instances:
+			if module_output_name in m_instance._outputs.keys():
+				return m_instance._outputs[module_output_name].get()
+		return None
 
 	def get_id(self):
 		return self.id.get()
@@ -242,11 +259,12 @@ class OutputController:
 	def add_output(self):
 		pass
 
-	def send_outputs(self, injectionAPI):
-		pass
-		# for output in self.outputs:
-		# 	if output.input_key != None:
-		# 		injectionAPI.set_value(output.get_id(), output.)
+	def send_outputs(self, injectionAPI, module_controller):
+		print(self.outputs[0].get_value(module_controller))
+
+		for output in self.outputs:
+			if output.input_key.get():
+				injectionAPI.set_value(output.get_id(), output.get_value(module_controller))
 
 
 # tkinter Window
@@ -291,7 +309,6 @@ class InjectionUI(tk.Tk):
 
 	def create_modules_ui(self, input_controller, module_controller):
 		for module in module_controller.get_modules():
-			# widget = ModuleWidget(module, input_controller.get_inputs(), self.frame_modules)
 			widget = ModuleWidget(module, input_controller, self.frame_modules)
 			widget.pack(fill='x')
 
@@ -329,12 +346,12 @@ class InjectionApp:
 		pygame.joystick.init()
 
 	def initialize(self):
+		self.injectionAPI.start()
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
 
 		self.module_controller.create_modules_dynamically()
 
-		# print(self.input_controller.get_inputs_name_id())
 		self.injectionUI.create_inputs_ui(self.input_controller)
 		self.injectionUI.create_modules_ui(self.input_controller, self.module_controller)
 		self.injectionUI.create_outputs_ui(self.module_controller, self.output_controller)
@@ -345,6 +362,8 @@ class InjectionApp:
 
 			self.input_controller.update()
 			self.module_controller.compute()
+			# self.output_controller.update()
+			self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
 
 			time.sleep(1/40)
 

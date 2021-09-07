@@ -27,7 +27,7 @@ class ModuleWidget(tk.LabelFrame):
 		self.frame_inputs.grid(row=0, column=0, sticky="N")
 		self.frame_outputs.grid(row=0, column=1, sticky="N")
 
-		self.input_options = dict() #{key, optionMenu}
+		# self.input_options = dict() #{key: (optionMenu, var)}
 		self.outputs = dict() #{key, value}
 
 		for key in module.get_inputs_dict():
@@ -36,41 +36,41 @@ class ModuleWidget(tk.LabelFrame):
 		for key, var in module.get_outputs_dict().items():
 			self.add_output(key, var)
 
-	def add_input(self, key):
-		self.frame = tk.Frame(self.frame_inputs)
-		self.frame.pack()
-
-		name = tk.Label(self.frame, text=key)
-		name.pack(side=tk.LEFT)
-
-		self.var = tk.StringVar()
-		self.option_menu = None
-		self.create_optionMenu(self.input_controller.get_inputs_name_id())
-
-		self.input_options[key] = self.option_menu
 
 	# update optionMenu list and link the module_input with the input selected
-	def option_menu_event(self, input_name):
-		self.create_optionMenu(self.input_controller.get_inputs_name_id())
-		inp = next((inp for inp in self.input_controller.get_inputs() if str(inp) == input_name), None)
-		if inp:
-			self.module._inputs[key] = inp
+	def option_menu_event(self, key, module_input_name):
+		input_found = next((e for e in self.input_controller.get_inputs() if str(e) == key), None)
 
-	def create_optionMenu(self, entries):
-		if self.option_menu:
-			self.option_menu.destroy()
-		if not entries:
-			entries = [""]
-		self.option_menu = tk.OptionMenu(self.frame, self.var, *entries, command=self.option_menu_event)
-		self.option_menu.pack(side=tk.RIGHT)
+		# print(self.module._inputs)
+		if input_found:
+			self.module._inputs[module_input_name] = input_found
+		# print(self.module._inputs)
+
+	def add_input(self, key):
+		frame = tk.Frame(self.frame_inputs)
+		title = tk.Label(frame, text=key)
+
+		frame.pack()
+		title.pack(side=tk.LEFT)
+
+		var = tk.StringVar()
+
+		inputs_name_id = self.input_controller.get_inputs_name_id()
+		if not inputs_name_id:
+			inputs_name_id = [""]
+
+		option_menu = tk.OptionMenu(frame, var, *inputs_name_id, command=lambda x: self.option_menu_event(x, key))
+		option_menu.pack(side=tk.RIGHT)
+
+		# self.input_options[key] = option_menu
 
 	def add_output(self, key, var):
 		frame = tk.Frame(self.frame_outputs)
-		name = tk.Label(frame, text=key)
+		title = tk.Label(frame, text=key)
 		value = tk.Label(frame, textvariable=var)
 
 		frame.pack()
-		name.pack(side=tk.LEFT)
+		title.pack(side=tk.LEFT)
 		value.pack(side=tk.RIGHT)
 
 		self.outputs[key] = 0
@@ -79,8 +79,8 @@ class OutputWidget(tk.Frame):
 	def __init__(self, output, modules_outputs, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-		self.str_var = tk.StringVar()
-		self.option_menu = tk.OptionMenu(self, self.str_var, *modules_outputs, command=None)
+		# self.str_var = tk.StringVar()
+		self.option_menu = tk.OptionMenu(self, output.input_key, *modules_outputs, command=None)
 		self.option_menu.pack(side=tk.LEFT)
 
 		self.peer_id = ttk.Spinbox(self, from_=0, to=32, textvariable=output.id, wrap=True, width=4)
