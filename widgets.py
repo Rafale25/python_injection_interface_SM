@@ -39,12 +39,9 @@ class ModuleWidget(tk.LabelFrame):
 
 	# update optionMenu list and link the module_input with the input selected
 	def option_menu_event(self, key, module_input_name):
-		input_found = next((e for e in self.input_controller.get_inputs() if str(e) == key), None)
-
-		# print(self.module._inputs)
-		if input_found:
+		# input_found = next((e for e in self.input_controller.get_inputs() if str(e) == key), None)
+		if input_found := next((e for e in self.input_controller.get_inputs() if str(e) == key), None):
 			self.module._inputs[module_input_name] = input_found
-		# print(self.module._inputs)
 
 	def add_input(self, key):
 		frame = tk.Frame(self.frame_inputs)
