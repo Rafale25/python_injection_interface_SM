@@ -177,14 +177,14 @@ class Module:
 	def get_input(self, key):
 		if self._inputs[key] != None:
 			return self._inputs[key].get_value()
-		return None
+		return 0.0
 
 	def get_outputs_dict(self):
 		return self._outputs
 
 	def add_output(self, key):
 		self._outputs[key] = tk.DoubleVar()
-		self._outputs[key].set(0)
+		self._outputs[key].set(0.0)
 
 	def set_output(self, key, value):
 		self._outputs[key].set(value)
@@ -260,11 +260,11 @@ class OutputController:
 		pass
 
 	def send_outputs(self, injectionAPI, module_controller):
-		print(self.outputs[0].get_value(module_controller))
-
 		for output in self.outputs:
 			if output.input_key.get():
-				injectionAPI.set_value(output.get_id(), output.get_value(module_controller))
+				value = output.get_value(module_controller)
+				if value != None:
+					injectionAPI.set_value(output.get_id(), value)
 
 
 # tkinter Window
@@ -346,7 +346,7 @@ class InjectionApp:
 		pygame.joystick.init()
 
 	def initialize(self):
-		# self.injectionAPI.start()
+		self.injectionAPI.start()
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
 

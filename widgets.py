@@ -76,7 +76,6 @@ class OutputWidget(tk.Frame):
 	def __init__(self, output, modules_outputs, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-		# self.str_var = tk.StringVar()
 		self.option_menu = tk.OptionMenu(self, output.input_key, *modules_outputs, command=None)
 		self.option_menu.pack(side=tk.LEFT)
 
