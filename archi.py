@@ -139,8 +139,7 @@ class InputController:
 		return self.inputs
 
 	def get_inputs_name_id(self):
-		return [f"input{i}" for i in range(4)]
-		# return [str(inp) for inp in self.inputs]
+		return [str(inp) for inp in self.inputs]
 
 	def update(self):
 		for inp in self.inputs:
@@ -148,7 +147,6 @@ class InputController:
 				inp.update()
 			else:
 				inp.value = 0
-
 
 # MODULES --
 class Module:
@@ -286,7 +284,7 @@ class InjectionUI(tk.Tk):
 
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.get_inputs():
-			widget = InputWidget("{} {}".format(inp.input_type, inp.id), inp.check_box, self.frame_inputs)
+			widget = InputWidget("{} {}".format(inp._input_type, inp._id), inp._check_box, self.frame_inputs)
 			widget.pack()
 
 			self.tk_inputs.append(widget)

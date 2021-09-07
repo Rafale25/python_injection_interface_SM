@@ -27,7 +27,7 @@ class ModuleWidget(tk.LabelFrame):
 		self.frame_inputs.grid(row=0, column=0, sticky="N")
 		self.frame_outputs.grid(row=0, column=1, sticky="N")
 
-		# self.input_options = dict() #{key, optionMenu}
+		self.input_options = dict() #{key, optionMenu}
 		self.outputs = dict() #{key, value}
 
 		for key in module.get_inputs_dict():
@@ -45,20 +45,22 @@ class ModuleWidget(tk.LabelFrame):
 
 		self.var = tk.StringVar()
 		self.option_menu = None
-
 		self.create_optionMenu(self.input_controller.get_inputs_name_id())
 
-		# self.input_options[key] = self.option_menu
+		self.input_options[key] = self.option_menu
 
 	# update optionMenu list and link the module_input with the input selected
 	def option_menu_event(self, input_name):
 		self.create_optionMenu(self.input_controller.get_inputs_name_id())
 		inp = next((inp for inp in self.input_controller.get_inputs() if str(inp) == input_name), None)
-		if inp: self.module._inputs[key] = inp
+		if inp:
+			self.module._inputs[key] = inp
 
 	def create_optionMenu(self, entries):
 		if self.option_menu:
 			self.option_menu.destroy()
+		if not entries:
+			entries = [""]
 		self.option_menu = tk.OptionMenu(self.frame, self.var, *entries, command=self.option_menu_event)
 		self.option_menu.pack(side=tk.RIGHT)
 
