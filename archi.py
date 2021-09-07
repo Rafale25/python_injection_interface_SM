@@ -237,7 +237,7 @@ class ModuleController:
 class Output:
 	def __init__(self):
 		self.input = None
-		self.input_key = tk.StringVar() #key from module
+		self.input_key = tk.StringVar()
 		self.id = tk.IntVar()
 		self.id.set(0)
 
