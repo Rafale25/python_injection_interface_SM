@@ -1,13 +1,6 @@
 import pygame
 
 class Input:
-	# INPUT_TYPE = {
-	# 	'numball': 'float',
-	# 	'axis': 'float',
-	# 	'button': 'int',
-	# 	'hat': 'tuple',
-	# }
-
 	def __init__(self, joystick, id, input_type):
 		self._joystick = joystick
 		self._id = id
@@ -19,11 +12,14 @@ class Input:
 	def __str__(self):
 		return "{} {}".format(self._input_type, self._id)
 
+	def __repr__(self):
+		return "{};{};{};{}".format(self._id, self._input_type, self._value, self._check_box)
+
 	def is_on(self):
 		return self._check_box
 
 	def get_value(self):
-		print(self._value)
+		# print(self._value)
 		return self._value
 
 	def switch(self):
@@ -41,9 +37,9 @@ class Input:
 		elif self._input_type == 'hat':
 			new_value = self._joystick.get_hat(self._id)
 
-		new_value = 69 #DEBUG
+		new_value = 69.0 #DEBUG
 		self._value = new_value
-		print("update: ", self._value)
+		# print(id(self))
 
 class InputController:
 	def __init__(self):

@@ -1,12 +1,25 @@
 import os
 import importlib
 
+class Var:
+	def __init__(self, value):
+		self._value = value
+
+	def __str__(self):
+		return "{}".format(self._value)
+
+	def get_value(self):
+		return self._value
+
+	def set_value(self, value):
+		self._value = value
+
 # MODULES --
 class Module:
 	def __init__(self):
 		self._name = ""
 		self._inputs = dict() #{key: Input}
-		self._outputs = dict() #{key: DoubleVar}
+		self._outputs = dict() #{key: Var}
 
 	def set_name(self, str):
 		self._name = str
@@ -16,9 +29,6 @@ class Module:
 
 	def get_outputs_keys(self):
 		return [key for key, value in self._outputs.items()]
-
-	# def get_outputs(self):
-	# 	return self._outputs
 
 	def get_inputs_dict(self):
 		return self._inputs
@@ -35,10 +45,10 @@ class Module:
 		return self._outputs
 
 	def add_output(self, key):
-		self._outputs[key] = 0.0
+		self._outputs[key] = Var(0.0)
 
 	def set_output(self, key, value):
-		self._outputs[key] = value
+		self._outputs[key].set_value(value)
 
 	def compute(self):
 		pass
@@ -47,7 +57,6 @@ class ModuleController:
 	MODULE_FOLDER_PATH = "./modules"
 
 	def __init__(self):
-		# self.modules = dict() #{string, Module}
 		self.modules_classes = []
 		self.module_instances = []
 
@@ -74,7 +83,7 @@ class ModuleController:
 			ModuleClass = getattr(module, name)
 			self.modules_classes.append(ModuleClass)
 
-		# TODO: Remove later
+		# TODO: Change later
 		# create an instance of every class/module
 		for ModuleCLass in self.modules_classes:
 			self.module_instances.append( ModuleCLass() )
