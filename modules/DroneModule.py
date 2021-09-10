@@ -23,7 +23,7 @@ class DroneModule(Module):
 		yaw = self.get_input('yaw')
 
 		# Do stuff #
-		thrust = (thrust + 1) * 2
+		# thrust = (thrust + 1) * 2
 
 		self.set_output("motorNW", thrust)
 		self.set_output("motorNE", roll)

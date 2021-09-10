@@ -1,22 +1,23 @@
 #! /usr/bin/python3
 
-import struct
+# import struct
 import socket
 import subprocess
 import time
 
+from functools import partial
+
 import importlib
 import os
-
-# import tkinter as tk
-# from tkinter import ttk
-
-# from functools import partial
 
 import pygame
 import dearpygui.dearpygui as dpg
 
-# from widgets import InputWidget, ModuleWidget, OutputWidget
+# import dearpygui.dearpygui as dpg
+# from dearpygui.demo import show_demo
+# show_demo()
+# dpg.start_dearpygui()
+# exit()
 
 # injectionAPI
 class InjectionAPI:
@@ -71,99 +72,24 @@ class InjectionAPI:
 
 
 # INPUTS --
-class Input:
-	# INPUT_TYPE = {
-	# 	'numball': 'float',
-	# 	'axis': 'float',
-	# 	'button': 'int',
-	# 	'hat': 'tuple',
-	# }
-
-	def __init__(self, joystick, id, input_type):
-		self._joystick = joystick
-		self._id = id
-
-		self._input_type = input_type
-		self._value = 0
-		self._check_box = False
-
-	def __str__(self):
-		return "{} {}".format(self._input_type, self._id)
-
-	def is_on(self):
-		return self._check_box
-
-	def get_value(self):
-		return self._value
-
-	def update(self):
-		new_value = 0
-
-		if self._input_type == 'numball':
-			new_value = self._joystick.get_ball(self._id)
-		elif self._input_type == 'axis':
-			new_value = self._joystick.get_axis(self._id)
-		elif self._input_type == 'button':
-			new_value = self._joystick.get_button(self._id)
-		elif self._input_type == 'hat':
-			new_value = self._joystick.get_hat(self._id)
-
-		# new_value = 69 #DEBUG
-		self._value = new_value
-
-class InputController:
-	def __init__(self):
-		self.inputs = []
-
-		self.joystick_count = 0
-		self.joysticks = []
-
-	def scan_joysticks(self):
-		self.joystick_count = pygame.joystick.get_count()
-		self.joysticks = [pygame.joystick.Joystick(i) for i in range(self.joystick_count)]
-
-	def init_inputs(self):
-		for joystick in self.joysticks:
-			for i in range(joystick.get_numballs()):
-				inp = Input(joystick=joystick, id=i, input_type="numball")
-				self.inputs.append(inp)
-			for i in range(joystick.get_numaxes()):
-				inp = Input(joystick=joystick, id=i, input_type="axis")
-				self.inputs.append(inp)
-			for i in range(joystick.get_numbuttons()):
-				inp = Input(joystick=joystick, id=i, input_type="button")
-				self.inputs.append(inp)
-			for i in range(joystick.get_numhats()):
-				inp = Input(joystick=joystick, id=i, input_type="hat")
-				self.inputs.append(inp)
-
-	def get_inputs(self):
-		return self.inputs
-
-	def get_inputs_name_id(self):
-		return [str(inp) for inp in self.inputs]
-
-	def update(self):
-		for inp in self.inputs:
-			if inp.is_on():
-				inp.update()
-			else:
-				inp.value = 0
 
 
 from module import Module
 from module import ModuleController
 
+from input import Input
+from input import InputController
+
+
 # OUTPUTS --
 class Output:
 	def __init__(self):
 		self.input = None
-		self.input_key = tk.StringVar()
-		self.id = tk.IntVar()
-		self.id.set(0)
+		self.input_key = ""
+		self.id = 0
 
 	def get_value(self, module_controller):
-		module_output_name = self.input_key.get()
+		module_output_name = self.input_key
 		for m_instance in module_controller.module_instances:
 			if module_output_name in m_instance._outputs.keys():
 				return m_instance._outputs[module_output_name].get()
@@ -201,20 +127,19 @@ class InjectionUI():
 		with dpg.window(id="main_window", menubar=True):
 			pass
 			with dpg.window(
-				label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True,
+				label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True, no_resize=True,
 				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
 				pass
 
 			with dpg.window(
-				label="Module", id="window_module", no_move=True, no_collapse=True, no_close=True,
+				label="Module", id="window_module", no_move=True, no_collapse=True, no_close=True, no_resize=True,
 				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
 				pass
 
 			with dpg.window(
-				label="Output", id="window_output", no_move=True, no_collapse=True, no_close=True,
+				label="Output", id="window_output", no_move=True, no_collapse=True, no_close=True, no_resize=True,
 				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
 				pass
-
 
 		dpg.setup_viewport()
 		dpg.set_viewport_title(title="Sm Injector Interface")
@@ -240,34 +165,59 @@ class InjectionUI():
 		dpg.set_primary_window("main_window", True)
 
 		self.create_inputs_ui(input_controller)
-		# self.create_modules_ui(input_controller, module_controller)
-		# self.create_outputs_ui(output_controller, output_controller)
+		self.create_modules_ui(input_controller, module_controller)
+		self.create_outputs_ui(module_controller, output_controller)
 
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.get_inputs():
-
-			# with dpg.child(parent="window_input", autosize_x=True, autosize_y=True, width=0, height=0):
+			with dpg.group(parent="window_input", horizontal=True):
+				dpg.add_button(label=str(inp))
 				# with dpg.tooltip(parent=dpg.last_item()):
 				# 	dpg.add_text("LOT OF DATA HERE")
-			dpg.add_button(parent="window_input", label=str(inp))
-			with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
-				dpg.add_text(str(inp))
-			dpg.add_same_line(parent="window_input")
-			dpg.add_checkbox(parent="window_input", label="", callback=None, default_value=False)
+				with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
+					dpg.add_text(str(inp))
+				dpg.add_checkbox(label="", callback=lambda id, value : inp.switch(), default_value=False)
 
 	def create_modules_ui(self, input_controller, module_controller):
-		# for module in module_controller.get_modules():
-		pass
+		for module in module_controller.get_modules():
+
+			with dpg.child(parent="window_module", height=200, border=True):
+				# IN
+				dpg.add_text("IN", bullet=True)
+				for key, inp in module._inputs.items():
+					with dpg.group(horizontal=True):
+
+						def callback(id, data):
+							input_key = dpg.get_item_user_data(id)
+
+							if input_key in module._inputs:
+								module._inputs[input_key] = data
+							dpg.set_item_label(id, str(data))
+
+						dpg.add_text(key)
+						dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
+							user_data=key, drop_callback=callback)
+
+				# OUT
+				dpg.add_text("OUT", bullet=True)
+				for key, out in module._outputs.items():
+					with dpg.group(horizontal=True):
+						pass
+						# print()
+						# dpg.add_text(key)
+						# dpg.add_text("a")
+						# dpg.add_visible_handler(parent=dpg.last_item(), callback=lambda x: dpg.set_item_label(dpg.last_item(), 2))
+						# dpg.add_visible_handler(parent=dpg.last_item(), callback=lambda x: print(module._outputs[key]))
+
 
 	def create_outputs_ui(self, module_controller, output_controller):
 		#TODO: replace this by a button to add them dynamically
-		# for i in range(4):
-		# 	output = Output()
-		# 	output_controller.outputs.append(output)
+		for i in range(4):
+			output = Output()
+			output_controller.outputs.append(output)
 
-		# modules_outputs = module_controller.get_outputs_keys()
-		# for output in output_controller.outputs:
-		pass
+		for output in output_controller.outputs:
+			pass
 
 	def update(self):
 		dpg.render_dearpygui_frame()
@@ -290,26 +240,25 @@ class InjectionApp:
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
 
-		self.injectionUI = InjectionUI(self.input_controller, self.module_controller, self.output_controller)
-
 		self.module_controller.create_modules_dynamically()
 
-		# self.injectionUI.create_inputs_ui(self.input_controller)
-		# self.injectionUI.create_modules_ui(self.input_controller, self.module_controller)
-		# self.injectionUI.create_outputs_ui(self.module_controller, self.output_controller)
+		self.injectionUI = InjectionUI(self.input_controller, self.module_controller, self.output_controller)
 
 	def run(self):
 		while dpg.is_dearpygui_running():
-		# while True:
-			# self.injectionUI.update()
-			dpg.render_dearpygui_frame()
+			self.injectionUI.update()
 
 			self.input_controller.update()
 			self.module_controller.compute()
+
+			# print(self.module_controller.module_instances[1]._inputs)
+			# print(self.module_controller.module_instances[1]._outputs)
+			# print()
+
 			# self.output_controller.update()
 			# self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
 
-			time.sleep(1/40)
+			time.sleep(1/10)
 
 		dpg.cleanup_dearpygui()
 

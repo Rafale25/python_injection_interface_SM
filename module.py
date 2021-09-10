@@ -17,8 +17,8 @@ class Module:
 	def get_outputs_keys(self):
 		return [key for key, value in self._outputs.items()]
 
-	def get_outputs(self):
-		return self._outputs
+	# def get_outputs(self):
+	# 	return self._outputs
 
 	def get_inputs_dict(self):
 		return self._inputs
