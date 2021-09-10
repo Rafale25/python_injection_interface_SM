@@ -346,7 +346,7 @@ class InjectionApp:
 		pygame.joystick.init()
 
 	def initialize(self):
-		self.injectionAPI.start()
+		# self.injectionAPI.start()
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
 

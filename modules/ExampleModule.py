@@ -1,4 +1,7 @@
-from archi import Module
+# import sys
+# sys.path.append("..")
+
+from module import Module
 
 class ExampleModule(Module):
 	def __init__(self, *args, **kwaargs):

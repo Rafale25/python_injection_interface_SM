@@ -1,4 +1,4 @@
-from archi import Module
+from module import Module
 
 class DroneModule(Module):
 	def __init__(self, *args, **kwaargs):

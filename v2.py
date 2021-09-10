@@ -8,14 +8,15 @@ import time
 import importlib
 import os
 
-import tkinter as tk
-from tkinter import ttk
+# import tkinter as tk
+# from tkinter import ttk
 
-from functools import partial
+# from functools import partial
 
 import pygame
+import dearpygui.dearpygui as dpg
 
-from widgets import InputWidget, ModuleWidget, OutputWidget
+# from widgets import InputWidget, ModuleWidget, OutputWidget
 
 # injectionAPI
 class InjectionAPI:
@@ -84,13 +85,13 @@ class Input:
 
 		self._input_type = input_type
 		self._value = 0
-		self._check_box = tk.IntVar()
+		self._check_box = False
 
 	def __str__(self):
 		return "{} {}".format(self._input_type, self._id)
 
 	def is_on(self):
-		return self._check_box.get()
+		return self._check_box
 
 	def get_value(self):
 		return self._value
@@ -149,89 +150,9 @@ class InputController:
 			else:
 				inp.value = 0
 
-# MODULES --
-class Module:
-	def __init__(self):
-		self._name = ""
-		self._inputs = dict() #{key: Input}
-		self._outputs = dict() #{key: DoubleVar}
 
-	def set_name(self, str):
-		self._name = str
-
-	def get_name(self):
-		return self._name
-
-	def get_outputs_keys(self):
-		return [key for key, value in self._outputs.items()]
-
-	def get_outputs(self):
-		return self._outputs
-
-	def get_inputs_dict(self):
-		return self._inputs
-
-	def add_input(self, key):
-		self._inputs[key] = None
-
-	def get_input(self, key):
-		if self._inputs[key] != None:
-			return self._inputs[key].get_value()
-		return 0.0
-
-	def get_outputs_dict(self):
-		return self._outputs
-
-	def add_output(self, key):
-		self._outputs[key] = tk.DoubleVar()
-		self._outputs[key].set(0.0)
-
-	def set_output(self, key, value):
-		self._outputs[key].set(value)
-
-	def compute(self):
-		pass
-
-class ModuleController:
-	MODULE_FOLDER_PATH = "./modules"
-
-	def __init__(self):
-		# self.modules = dict() #{string, Module}
-		self.modules_classes = []
-		self.module_instances = []
-
-	def get_modules(self):
-		return self.module_instances
-
-	def get_outputs_items(self):
-		items = {}
-		for module in self.module_instances:
-			items.update(module.get_outputs())
-		return items
-
-	def get_outputs_keys(self):
-		keys = []
-		for module in self.module_instances:
-			keys.extend(module.get_outputs_keys())
-		return keys
-
-	def create_modules_dynamically(self):
-		# import class dynamically and instantiate them
-		modules_names = [path.split('.')[0] for path in os.listdir(ModuleController.MODULE_FOLDER_PATH) if path[-2:] == "py"]
-
-		for name in modules_names:
-			module = importlib.import_module("modules.{}".format(name))
-			ModuleClass = getattr(module, name)
-			self.modules_classes.append(ModuleClass)
-
-		# TODO: Remove later
-		# create an instance of every class/module
-		for ModuleCLass in self.modules_classes:
-			self.module_instances.append( ModuleCLass() )
-
-	def compute(self):
-		for module in self.module_instances:
-			module.compute()
+from module import Module
+from module import ModuleController
 
 # OUTPUTS --
 class Output:
@@ -268,69 +189,88 @@ class OutputController:
 
 
 # tkinter Window
-class InjectionUI(tk.Tk):
-	WIDTH = 100
-	BORDER_WIDTH = 3
-	PADX = 10
-
-	COLUMN_SIZE = WIDTH + BORDER_WIDTH + PADX
-
-	def __init__(self, *args, **kwaargs):
+class InjectionUI():
+	def __init__(self, input_controller, module_controller, output_controller, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-		self.minsize(InjectionUI.COLUMN_SIZE*3, 100)
-		self.maxsize(1920, 1080)
+		VIEWPORT_WIDTH = 600
+		VIEWPORT_HEIGHT = 400
+		VIEWPORT_MIN_WIDTH = 600
+		VIEWPORT_MIN_HEIGHT = 200
 
-		self.main_frame = tk.Frame(self, borderwidth=0, relief="raised")
-		self.main_frame.pack(expand=True, fill="both")
+		with dpg.window(id="main_window", menubar=True):
+			pass
+			with dpg.window(
+				label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True,
+				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
+				pass
 
-		self.frame_inputs = tk.Frame(self.main_frame, borderwidth=InjectionUI.BORDER_WIDTH, padx=InjectionUI.PADX, relief="raised")
-		self.frame_modules = tk.Frame(self.main_frame, borderwidth=InjectionUI.BORDER_WIDTH, padx=InjectionUI.PADX, relief="raised")
-		self.frame_outputs = tk.Frame(self.main_frame, borderwidth=InjectionUI.BORDER_WIDTH, padx=InjectionUI.PADX, relief="raised")
+			with dpg.window(
+				label="Module", id="window_module", no_move=True, no_collapse=True, no_close=True,
+				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
+				pass
 
-		self.frame_inputs.grid(row=0, column=0, sticky="NESW")
-		self.frame_modules.grid(row=0, column=1, sticky="NESW")
-		self.frame_outputs.grid(row=0, column=2, sticky="NESW")
+			with dpg.window(
+				label="Output", id="window_output", no_move=True, no_collapse=True, no_close=True,
+				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
+				pass
 
-		# give minimum width to columns
-		for i in range(3):
-			self.main_frame.grid_columnconfigure(i, minsize=InjectionUI.WIDTH, weight=1)
 
-		self.tk_inputs = []
-		self.tk_modules = []
-		self.tk_outputs = []
+		dpg.setup_viewport()
+		dpg.set_viewport_title(title="Sm Injector Interface")
+		dpg.set_viewport_width(VIEWPORT_WIDTH)
+		dpg.set_viewport_height(VIEWPORT_HEIGHT)
+		dpg.set_viewport_min_width(VIEWPORT_MIN_WIDTH)
+		dpg.set_viewport_min_height(VIEWPORT_MIN_HEIGHT)
+		dpg.set_viewport_vsync(True)
+
+		dpg.set_viewport_resizable(True)
+
+		def resize_viewport(_, size):
+			viewport_width = dpg.get_viewport_width()
+			viewport_height = dpg.get_viewport_height()
+
+			# for i, window in enumerate(("INPUT", "MODULE", "OUTPUT")):
+			for i, window in enumerate(("window_input", "window_module", "window_output")):
+				dpg.set_item_pos(item=window, pos=((viewport_width/3) * i, 20))
+				dpg.set_item_width(item=window, width=viewport_width/3)
+				dpg.set_item_height(item=window, height=viewport_height)
+		dpg.set_viewport_resize_callback(resize_viewport)
+
+		dpg.set_primary_window("main_window", True)
+
+		self.create_inputs_ui(input_controller)
+		# self.create_modules_ui(input_controller, module_controller)
+		# self.create_outputs_ui(output_controller, output_controller)
 
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.get_inputs():
-			widget = InputWidget("{} {}".format(inp._input_type, inp._id), inp._check_box, self.frame_inputs)
-			widget.pack()
 
-			self.tk_inputs.append(widget)
+			# with dpg.child(parent="window_input", autosize_x=True, autosize_y=True, width=0, height=0):
+				# with dpg.tooltip(parent=dpg.last_item()):
+				# 	dpg.add_text("LOT OF DATA HERE")
+			dpg.add_button(parent="window_input", label=str(inp))
+			with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
+				dpg.add_text(str(inp))
+			dpg.add_same_line(parent="window_input")
+			dpg.add_checkbox(parent="window_input", label="", callback=None, default_value=False)
 
 	def create_modules_ui(self, input_controller, module_controller):
-		for module in module_controller.get_modules():
-			widget = ModuleWidget(module, input_controller, self.frame_modules)
-			widget.pack(fill='x')
-
-			self.tk_modules.append(widget)
+		# for module in module_controller.get_modules():
+		pass
 
 	def create_outputs_ui(self, module_controller, output_controller):
 		#TODO: replace this by a button to add them dynamically
-		for i in range(4):
-			output = Output()
-			output_controller.outputs.append(output)
+		# for i in range(4):
+		# 	output = Output()
+		# 	output_controller.outputs.append(output)
 
-		modules_outputs = module_controller.get_outputs_keys()
-		for output in output_controller.outputs:
-			widget = OutputWidget(output, modules_outputs, self.frame_outputs)
-			widget.pack()
+		# modules_outputs = module_controller.get_outputs_keys()
+		# for output in output_controller.outputs:
+		pass
 
-			self.tk_outputs.append(widget)
-
-
-	def update_tk(self):
-		self.update_idletasks()
-		self.update()
+	def update(self):
+		dpg.render_dearpygui_frame()
 
 # MAIN CLASS
 class InjectionApp:
@@ -339,33 +279,39 @@ class InjectionApp:
 		self.module_controller = ModuleController()
 		self.output_controller = OutputController()
 
-		self.injectionAPI = InjectionAPI()
-		self.injectionUI = InjectionUI()
-
 		pygame.init()
 		pygame.joystick.init()
 
+		self.injectionAPI = InjectionAPI()
+		self.injectionUI = None
+
 	def initialize(self):
-		self.injectionAPI.start()
+		# self.injectionAPI.start()
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
 
+		self.injectionUI = InjectionUI(self.input_controller, self.module_controller, self.output_controller)
+
 		self.module_controller.create_modules_dynamically()
 
-		self.injectionUI.create_inputs_ui(self.input_controller)
-		self.injectionUI.create_modules_ui(self.input_controller, self.module_controller)
-		self.injectionUI.create_outputs_ui(self.module_controller, self.output_controller)
+		# self.injectionUI.create_inputs_ui(self.input_controller)
+		# self.injectionUI.create_modules_ui(self.input_controller, self.module_controller)
+		# self.injectionUI.create_outputs_ui(self.module_controller, self.output_controller)
 
 	def run(self):
-		while True:
-			self.injectionUI.update_tk()
+		while dpg.is_dearpygui_running():
+		# while True:
+			# self.injectionUI.update()
+			dpg.render_dearpygui_frame()
 
 			self.input_controller.update()
 			self.module_controller.compute()
 			# self.output_controller.update()
-			self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
+			# self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
 
 			time.sleep(1/40)
+
+		dpg.cleanup_dearpygui()
 
 
 def main():
