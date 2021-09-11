@@ -225,15 +225,15 @@ class InjectionApp:
 		self.output_controller = OutputController()
 
 		# pygame.init()
-		# pygame.joystick.init()
+		pygame.joystick.init()
 
 		self.injectionAPI = InjectionAPI()
 		self.injectionUI = None
 
 	def initialize(self):
-		# self.injectionAPI.start()
-		# self.input_controller.scan_joysticks()
-		# self.input_controller.init_inputs()
+		self.injectionAPI.start()
+		self.input_controller.scan_joysticks()
+		self.input_controller.init_inputs()
 
 		self.module_controller.create_modules_dynamically()
 
@@ -249,7 +249,7 @@ class InjectionApp:
 			# self.output_controller.update()
 			# self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
 
-			time.sleep(1 / 40)
+			time.sleep(1 / 60)
 
 		dpg.cleanup_dearpygui()
 
@@ -265,5 +265,7 @@ if __name__ == '__main__':
 """
 WINDOWS 10: problems to fix
 	- viewport not calling resize callback on start
+
 	- pygame completely breaking the program
+	-> possible fix: don't call pygame.init(), only pygame.joystick.init()
 """

@@ -38,7 +38,6 @@ class Input:
 
 		new_value = 69.0 #DEBUG
 		self._value = new_value
-		# print(id(self))
 
 class InputController:
 	def __init__(self):
