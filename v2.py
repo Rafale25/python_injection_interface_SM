@@ -33,14 +33,14 @@ class InjectionApp:
 		self.module_controller = ModuleController()
 		self.output_controller = OutputController()
 
-		# pygame.init() # not used ?
+		pygame.init() # not used ?
 		pygame.joystick.init()
 
 		self.injectionAPI = InjectionAPI()
 		self.injectionUI = None
 
 	def initialize(self):
-		self.injectionAPI.start()
+		# self.injectionAPI.start()
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
 
@@ -52,15 +52,20 @@ class InjectionApp:
 		while self.injectionUI.is_running():
 			self.injectionUI.update()
 
+			pygame.event.get() #used or it will freeze the program on windows
+
 			self.input_controller.update()
 			self.module_controller.compute()
+
+			print(self.module_controller.module_instances[1]._inputs)
 
 			# self.output_controller.update()
 			# self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
 
-			time.sleep(1 / 60)
+			time.sleep(1.0 / 40)
 
 		self.injectionUI.cleanup()
+		pygame.quit()
 
 def main():
 	app = InjectionApp()
@@ -76,5 +81,5 @@ WINDOWS 10: problems to fix
 	-> manually call resize_viewport at start
 
 	! pygame completely breaking the program
-	-> possible fix: don't call pygame.init(), only pygame.joystick.init()
+	-> call pygame.event.get() in loop
 """

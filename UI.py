@@ -87,6 +87,7 @@ class InjectionUI():
 
 							if input_key in module._inputs:
 								module._inputs[input_key] = data
+								print(data)
 							dpg.set_item_label(id, str(data))
 
 						dpg.add_text(key)

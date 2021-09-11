@@ -1,6 +1,8 @@
 import struct
+import time
 import socket
 import subprocess
+import atexit
 
 class InjectionAPI:
 	injector_filepath = "C:/Program Files (x86)/Steam/steamapps/workshop/content/387990/1771470800/sminject.exe"
@@ -17,7 +19,7 @@ class InjectionAPI:
 			self.subprocess = subprocess.Popen(InjectionAPI.injector_filepath)
 
 			time.sleep(0.5)
-			if self.subprocess.poll() != None:
+			if self.subprocess.poll() != None: #subprocess return None if alive
 				print("Error polling subprocess.")
 				return -1
 
@@ -26,6 +28,12 @@ class InjectionAPI:
 
 		except OSError as err:
 			print(err)
+
+		atexit.register(self.cleanup)
+
+	def cleanup(self):
+		if self.subprocess.poll() == None:
+			self.subprocess.kill()
 
 	def scan(self):
 		self.socket.sendto(struct.pack(">B", 0x03), self.address)
