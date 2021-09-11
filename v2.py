@@ -1,6 +1,6 @@
 #! /usr/bin/python3
 
-# import struct
+import struct
 import socket
 import subprocess
 import time
@@ -182,7 +182,6 @@ class InjectionUI():
 							callback=lambda id, _, data: dpg.set_value(data[0], data[2]._outputs[data[1]].get_value() ))
 							# callback=lambda id, _, data: dpg.set_value(data[0], data[2]._outputs[data[1]]))
 
-
 	def create_outputs_ui(self, output_controller):
 		#TODO: replace this by a button to add them dynamically
 		for i in range(4):
@@ -215,7 +214,6 @@ class InjectionUI():
 
 				dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1)
 
-
 	def update(self):
 		dpg.render_dearpygui_frame()
 
@@ -226,16 +224,16 @@ class InjectionApp:
 		self.module_controller = ModuleController()
 		self.output_controller = OutputController()
 
-		pygame.init()
-		pygame.joystick.init()
+		# pygame.init()
+		# pygame.joystick.init()
 
 		self.injectionAPI = InjectionAPI()
 		self.injectionUI = None
 
 	def initialize(self):
-		self.injectionAPI.start()
-		self.input_controller.scan_joysticks()
-		self.input_controller.init_inputs()
+		# self.injectionAPI.start()
+		# self.input_controller.scan_joysticks()
+		# self.input_controller.init_inputs()
 
 		self.module_controller.create_modules_dynamically()
 
@@ -263,3 +261,9 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+"""
+WINDOWS 10: problems to fix
+	- viewport not calling resize callback on start
+	- pygame completely breaking the program
+"""
