@@ -121,7 +121,7 @@ class InjectionUI():
 					key, module_output = data
 
 					dpg.set_item_label(id, key)
-					out.input = module_output
+					out._input = module_output
 
 				dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
 					user_data=output,

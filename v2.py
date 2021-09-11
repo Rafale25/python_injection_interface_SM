@@ -40,7 +40,7 @@ class InjectionApp:
 		self.injectionUI = None
 
 	def initialize(self):
-		# self.injectionAPI.start()
+		self.injectionAPI.start()
 		self.input_controller.scan_joysticks()
 		self.input_controller.init_inputs()
 
@@ -60,7 +60,7 @@ class InjectionApp:
 			# print(self.module_controller.module_instances[0]._inputs) #DEBUG
 
 			# self.output_controller.update()
-			# self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
+			self.output_controller.send_outputs(self.injectionAPI)
 
 			time.sleep(1.0 / 40)
 
