@@ -1,7 +1,7 @@
 import os
 import importlib
 
-class Var:
+class FloatVar:
 	def __init__(self, value):
 		self._value = value
 
@@ -19,7 +19,7 @@ class Module:
 	def __init__(self):
 		self._name = ""
 		self._inputs = dict() #{key: Input}
-		self._outputs = dict() #{key: Var}
+		self._outputs = dict() #{key: FloatVar}
 
 	def set_name(self, str):
 		self._name = str
@@ -45,7 +45,7 @@ class Module:
 		return self._outputs
 
 	def add_output(self, key):
-		self._outputs[key] = Var(0.0)
+		self._outputs[key] = FloatVar(0.0)
 
 	def set_output(self, key, value):
 		self._outputs[key].set_value(value)

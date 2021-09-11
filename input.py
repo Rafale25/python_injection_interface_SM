@@ -19,7 +19,6 @@ class Input:
 		return self._check_box
 
 	def get_value(self):
-		# print(self._value)
 		return self._value
 
 	def switch(self):

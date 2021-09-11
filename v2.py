@@ -248,9 +248,6 @@ class InjectionApp:
 			self.input_controller.update()
 			self.module_controller.compute()
 
-			# print(self.output_controller.outputs[0])
-			# print(self.module_controller.module_instances[1]._outputs)
-
 			# self.output_controller.update()
 			# self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
 
@@ -266,16 +263,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-
-"""
-##lists##
-inputs []
-module_outputs []
-
-##commands##
-checkForController
-loadModule
-link inputs/module_ouput to module_input/output
-
-"""
