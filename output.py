@@ -13,6 +13,9 @@ class Output:
 			return self._input.get_value()
 		return 0.0
 
+	def set_id(self, id):
+		self._id = id
+
 	def get_id(self):
 		return self._id
 
@@ -31,6 +34,7 @@ class OutputController:
 	def send_outputs(self, injectionAPI):
 		for output in self.outputs:
 			if not output._checkbox: continue
+			print(output.get_id())
 			if output._input:
 				value = output._input.get_value()
 				if value != None:

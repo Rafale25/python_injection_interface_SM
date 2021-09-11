@@ -132,7 +132,9 @@ class InjectionUI():
 					user_data=(dpg.last_item(), output),
 					callback=callback2)
 
-				dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1)
+				dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1,
+					user_data=output,
+					callback=lambda id, data, udata: udata.set_id(data))
 				dpg.add_checkbox(label="", user_data=output, callback=lambda id, value, udata : udata.switch(), default_value=False)
 
 	def is_running(self):
