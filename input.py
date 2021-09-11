@@ -36,7 +36,6 @@ class Input:
 		elif self._input_type == 'hat':
 			new_value = self._joystick.get_hat(self._id)
 
-		# new_value = 69.0 #DEBUG
 		self._value = new_value
 
 class InputController:

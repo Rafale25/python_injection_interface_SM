@@ -83,16 +83,15 @@ class InjectionUI():
 					with dpg.group(horizontal=True):
 
 						def callback(id, data):
-							input_key = dpg.get_item_user_data(id)
+							input_key, mod = dpg.get_item_user_data(id)
 
-							if input_key in module._inputs:
-								module._inputs[input_key] = data
-								print(data)
+							if input_key in mod._inputs:
+								mod._inputs[input_key] = data
 							dpg.set_item_label(id, str(data))
 
 						dpg.add_text(key)
 						dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
-							user_data=key, drop_callback=callback)
+							user_data=(key, module), drop_callback=callback)
 
 				# OUT
 				dpg.add_text("OUT", bullet=True)

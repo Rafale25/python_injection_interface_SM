@@ -57,7 +57,7 @@ class InjectionApp:
 			self.input_controller.update()
 			self.module_controller.compute()
 
-			print(self.module_controller.module_instances[1]._inputs)
+			# print(self.module_controller.module_instances[0]._inputs) #DEBUG
 
 			# self.output_controller.update()
 			# self.output_controller.send_outputs(self.injectionAPI, self.module_controller)
