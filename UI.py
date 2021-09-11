@@ -108,11 +108,6 @@ class InjectionUI():
 							callback=lambda id, _, data: dpg.set_value(data[0], data[2]._outputs[data[1]].get_value() ))
 
 	def create_outputs_ui(self, output_controller):
-		#TODO: replace this by a button to add them dynamically
-		for i in range(4):
-			output = Output()
-			output_controller.outputs.append(output)
-
 		for output in output_controller.outputs:
 			with dpg.group(parent="window_output", horizontal=True):
 
@@ -138,6 +133,7 @@ class InjectionUI():
 					callback=callback2)
 
 				dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1)
+				dpg.add_checkbox(label="", user_data=output, callback=lambda id, value, udata : udata.switch(), default_value=False)
 
 	def is_running(self):
 		return dpg.is_dearpygui_running()
