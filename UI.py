@@ -19,7 +19,7 @@ class InjectionUI():
 		VIEWPORT_MIN_HEIGHT = 200
 
 		with dpg.window(id="main_window", menubar=True):
-			pass
+
 			with dpg.window(
 				label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True, no_resize=True,
 				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
@@ -36,24 +36,15 @@ class InjectionUI():
 				pass
 
 		dpg.setup_viewport()
-		dpg.set_viewport_title(title="Sm Injector Interface")
+		dpg.set_viewport_title(title="SM Injector Interface")
 		dpg.set_viewport_width(VIEWPORT_WIDTH)
 		dpg.set_viewport_height(VIEWPORT_HEIGHT)
 		dpg.set_viewport_min_width(VIEWPORT_MIN_WIDTH)
 		dpg.set_viewport_min_height(VIEWPORT_MIN_HEIGHT)
 		dpg.set_viewport_vsync(True)
-
 		dpg.set_viewport_resizable(True)
 
-		def resize_viewport(_, size):
-			viewport_width = dpg.get_viewport_width()
-			viewport_height = dpg.get_viewport_height()
-
-			for i, window in enumerate(("window_input", "window_module", "window_output")):
-				dpg.set_item_pos(item=window, pos=((viewport_width/3) * i, 20))
-				dpg.set_item_width(item=window, width=viewport_width/3)
-				dpg.set_item_height(item=window, height=viewport_height)
-		dpg.set_viewport_resize_callback(resize_viewport)
+		dpg.set_viewport_resize_callback(self.resize_viewport)
 
 		dpg.set_primary_window("main_window", True)
 
@@ -61,7 +52,17 @@ class InjectionUI():
 		self.create_modules_ui(module_controller)
 		self.create_outputs_ui(output_controller)
 
-		resize_viewport(0, (0, 0))
+		self.resize_viewport(0, (0, 0))
+
+	# id and size are unused
+	def resize_viewport(self, id, size):
+		viewport_width = dpg.get_viewport_width()
+		viewport_height = dpg.get_viewport_height()
+
+		for i, window in enumerate(("window_input", "window_module", "window_output")):
+			dpg.set_item_pos(item=window, pos=((viewport_width / 3) * i, 20))
+			dpg.set_item_width(item=window, width=viewport_width / 3)
+			dpg.set_item_height(item=window, height=viewport_height)
 
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.get_inputs():
@@ -82,7 +83,7 @@ class InjectionUI():
 				for key, inp in module._inputs.items():
 					with dpg.group(horizontal=True):
 
-						def callback(id, data):
+						def drop_callback(id, data):
 							input_key, mod = dpg.get_item_user_data(id)
 
 							if input_key in mod._inputs:
@@ -91,7 +92,7 @@ class InjectionUI():
 
 						dpg.add_text(key)
 						dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
-							user_data=(key, module), drop_callback=callback)
+							user_data=(key, module), drop_callback=drop_callback)
 
 				# OUT
 				dpg.add_text("OUT", bullet=True)
@@ -111,7 +112,7 @@ class InjectionUI():
 		for output in output_controller.outputs:
 			with dpg.group(parent="window_output", horizontal=True):
 
-				def callback(id, data):
+				def drop_callback(id, data):
 					out = dpg.get_item_user_data(id)
 					key, module_output = data
 
@@ -120,9 +121,9 @@ class InjectionUI():
 
 				dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
 					user_data=output,
-					drop_callback=callback)
+					drop_callback=drop_callback)
 
-				def callback2(id, _, user_data):
+				def callback(id, _, user_data):
 					id_but, out = user_data
 					if out:
 						dpg.set_value(id_but, out.get_value())
@@ -130,7 +131,7 @@ class InjectionUI():
 				dpg.add_text("0.0")
 				dpg.add_visible_handler(parent=dpg.last_item(),
 					user_data=(dpg.last_item(), output),
-					callback=callback2)
+					callback=callback)
 
 				dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1,
 					user_data=output,

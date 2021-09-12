@@ -34,7 +34,6 @@ class OutputController:
 	def send_outputs(self, injectionAPI):
 		for output in self.outputs:
 			if not output._checkbox: continue
-			print(output.get_id())
 			if output._input:
 				value = output._input.get_value()
 				if value != None:

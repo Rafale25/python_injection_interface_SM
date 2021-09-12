@@ -26,13 +26,14 @@ class InjectionAPI:
 			self.scan()
 			self.poll()
 
+			atexit.register(self.cleanup)
+
 		except OSError as err:
 			print(err)
 
-		atexit.register(self.cleanup)
-
 	def cleanup(self):
-		if self.subprocess.poll() == None:
+
+		if self.subprocess and self.subprocess.poll() == None:
 			self.subprocess.kill()
 
 	def scan(self):

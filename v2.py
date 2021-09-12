@@ -2,11 +2,7 @@
 
 import time
 
-from functools import partial
-
 import pygame
-
-# import dearpygui.dearpygui as dpg
 
 # import dearpygui.dearpygui as dpg
 # from dearpygui.demo import show_demo
@@ -33,7 +29,7 @@ class InjectionApp:
 		self.module_controller = ModuleController()
 		self.output_controller = OutputController()
 
-		pygame.init() # not used ?
+		pygame.init() # needed because of "pygame.event.get() and pygame.quit()"
 		pygame.joystick.init()
 
 		self.injectionAPI = InjectionAPI()
@@ -59,7 +55,6 @@ class InjectionApp:
 
 			# print(self.module_controller.module_instances[0]._inputs) #DEBUG
 
-			# self.output_controller.update()
 			self.output_controller.send_outputs(self.injectionAPI)
 
 			time.sleep(1.0 / 40)
@@ -68,6 +63,7 @@ class InjectionApp:
 		pygame.quit()
 
 def main():
+	print("SALUT IRE !!")
 	app = InjectionApp()
 	app.initialize()
 	app.run()
