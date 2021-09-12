@@ -63,7 +63,6 @@ class InjectionApp:
 		pygame.quit()
 
 def main():
-	print("SALUT IRE !!")
 	app = InjectionApp()
 	app.initialize()
 	app.run()
