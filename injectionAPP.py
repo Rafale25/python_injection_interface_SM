@@ -33,7 +33,8 @@ class InjectionApp:
 		pygame.joystick.init()
 
 		self.injectionAPI = InjectionAPI()
-		self.injectionUI = None
+		# self.injectionUI = None
+		self.injectionUI = InjectionUI()
 
 	def initialize(self):
 		self.injectionAPI.start()
@@ -42,7 +43,7 @@ class InjectionApp:
 
 		self.module_controller.create_modules_dynamically()
 
-		self.injectionUI = InjectionUI(self.input_controller, self.module_controller, self.output_controller)
+		self.injectionUI.initialize(self.input_controller, self.module_controller, self.output_controller)
 
 	def run(self):
 		while self.injectionUI.is_running():
@@ -54,8 +55,10 @@ class InjectionApp:
 			self.module_controller.compute()
 
 			# print(self.module_controller.module_instances[0]._inputs) #DEBUG
+			print("\n".join(str(x) for x in self.output_controller.outputs))
+			print()
 
-			self.output_controller.send_outputs(self.injectionAPI)
+			# self.output_controller.send_outputs(self.injectionAPI)
 
 			time.sleep(1.0 / 40)
 

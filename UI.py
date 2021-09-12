@@ -10,9 +10,10 @@ from output import OutputController
 import dearpygui.dearpygui as dpg
 
 class InjectionUI():
-	def __init__(self, input_controller, module_controller, output_controller, *args, **kwaargs):
+	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
+	def initialize(self, input_controller, module_controller, output_controller):
 		VIEWPORT_WIDTH = 800
 		VIEWPORT_HEIGHT = 600
 		VIEWPORT_MIN_WIDTH = 600
@@ -52,6 +53,7 @@ class InjectionUI():
 		self.create_modules_ui(module_controller)
 		self.create_outputs_ui(output_controller)
 
+		# call resize at start because windows don't do it
 		self.resize_viewport(0, (0, 0))
 
 	# id and size are unused
@@ -110,7 +112,8 @@ class InjectionUI():
 
 	def create_outputs_ui(self, output_controller):
 		for output in output_controller.outputs:
-			with dpg.group(parent="window_output", horizontal=True):
+			with dpg.group(parent="window_output", horizontal=True) as output_widget:
+
 
 				def drop_callback(id, data):
 					out = dpg.get_item_user_data(id)
@@ -137,6 +140,13 @@ class InjectionUI():
 					user_data=output,
 					callback=lambda id, data, udata: udata.set_id(data))
 				dpg.add_checkbox(label="", user_data=output, callback=lambda id, value, udata : udata.switch(), default_value=False)
+
+				def delete_callback(id, data, udata):
+					out, out_widget = udata
+					dpg.delete_item(out)
+
+
+				dpg.add_button(label="delete", user_data=(output, output_widget), width=75, height=20, delete_callback=delete_callback)
 
 	def is_running(self):
 		return dpg.is_dearpygui_running()
