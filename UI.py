@@ -18,13 +18,17 @@ class InjectionUI:
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
-	def initialize(self, input_controller, module_controller, output_controller):
+	def initialize(self, injectionAPI, input_controller, module_controller, output_controller):
 		VIEWPORT_WIDTH = 800
 		VIEWPORT_HEIGHT = 600
 		VIEWPORT_MIN_WIDTH = 600
 		VIEWPORT_MIN_HEIGHT = 200
 
 		with dpg.window(id="main_window", menubar=True):
+
+			with dpg.menu_bar():
+				dpg.add_menu_item(label="Scan", callback=lambda: injectionAPI.scan())
+				dpg.add_menu_item(label="Poll", callback=lambda: injectionAPI.poll())
 
 			with dpg.window(
 				label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True, no_resize=True,
@@ -178,7 +182,6 @@ class InjectionUI:
 
 				dpg.add_button(label="X", user_data=(output, output_widget), width=20, callback=delete_callback)
 				dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #theme is declared in initialize()
-
 
 	def create_outputs_ui(self, output_controller):
 		# outputs container (so the + button can stay at the bottom)

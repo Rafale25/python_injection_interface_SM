@@ -37,7 +37,8 @@ class InjectionApp:
 
 		self.module_controller.create_modules_dynamically()
 
-		self.injectionUI.initialize(self.input_controller, self.module_controller, self.output_controller)
+		self.injectionUI.initialize(
+			self.injectionAPI, self.input_controller, self.module_controller, self.output_controller)
 
 	def run(self):
 		while self.injectionUI.is_running():
@@ -52,7 +53,7 @@ class InjectionApp:
 			# print("\n".join(str(x) for x in self.output_controller.outputs))
 			# print()
 
-			# self.output_controller.send_outputs(self.injectionAPI)
+			self.output_controller.send_outputs(self.injectionAPI)
 
 			time.sleep(1.0 / 40)
 
