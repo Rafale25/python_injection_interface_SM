@@ -9,6 +9,7 @@ class Input:
 		self._input_type = input_type
 		self._value = 0.0
 		self._check_box = False
+		self._invert = False
 
 		# self.tmp_for_testing = 0.0
 
@@ -23,6 +24,9 @@ class Input:
 
 	def get_value(self):
 		return self._value
+
+	def invert(self):
+		self._invert = not self._invert
 
 	def switch(self):
 		self._check_box = not self._check_box
@@ -41,7 +45,9 @@ class Input:
 
 		# self.tmp_for_testing += 0.01
 		# new_value = math.sin(self.tmp_for_testing)
-		# print(new_value)
+
+		if self._invert:
+			new_value = -new_value
 		self._value = new_value
 
 class InputController:

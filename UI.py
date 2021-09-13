@@ -94,6 +94,7 @@ class InjectionUI:
 				with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
 					dpg.add_text(str(inp))
 				dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.switch(), default_value=False)
+				dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.invert(), default_value=False)
 
 				# visible value callback
 				def callback(id, data, udata):
