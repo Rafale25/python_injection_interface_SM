@@ -75,7 +75,6 @@ class InjectionUI:
 		# call resize at start because windows don't do it
 		self.resize_viewport(0, (0, 0))
 
-
 	# id and size are unused
 	def resize_viewport(self, id, size):
 		viewport_width = dpg.get_viewport_width()
@@ -95,6 +94,17 @@ class InjectionUI:
 				with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
 					dpg.add_text(str(inp))
 				dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.switch(), default_value=False)
+
+				# visible value callback
+				def callback(id, data, udata):
+					text_id, input_o = udata
+					dpg.set_value(text_id, "{:g}".format(input_o.get_value()))
+
+				dpg.add_text("0")
+				dpg.add_visible_handler(parent=dpg.last_item(),
+					user_data=(dpg.last_item(), inp),
+					callback=callback)
+
 
 	def create_modules_ui(self, module_controller):
 		for module in module_controller.get_modules():
@@ -126,7 +136,7 @@ class InjectionUI:
 							dpg.add_text(key)
 
 						dpg.add_text("0.0")
-						dpg.add_visible_handler(parent=id,
+						dpg.add_visible_handler(parent=dpg.last_item(),
 							user_data=(dpg.last_item(), key, module),
 							callback=lambda id, _, data: dpg.set_value(data[0], "{:.3f}".format(data[2]._outputs[data[1]].get_value()) ))
 
