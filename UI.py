@@ -9,7 +9,12 @@ from output import OutputController
 
 import dearpygui.dearpygui as dpg
 
-class InjectionUI():
+# drag_payload
+class Payload:
+	def __init__(self):
+		pass
+
+class InjectionUI:
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
@@ -49,12 +54,23 @@ class InjectionUI():
 
 		dpg.set_primary_window("main_window", True)
 
+
+		with dpg.theme(default_theme=True):
+			dpg.add_theme_style(dpg.mvStyleVar_SelectableTextAlign, 5, category=dpg.mvThemeCat_Core)
+
+		# themes
+		with dpg.theme(id="theme_button_delete"):
+			dpg.add_theme_color(dpg.mvThemeCol_Button, (255, 140, 23), category=dpg.mvThemeCat_Core)
+			dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+
+		# widgets
 		self.create_inputs_ui(input_controller)
 		self.create_modules_ui(module_controller)
 		self.create_outputs_ui(output_controller)
 
 		# call resize at start because windows don't do it
 		self.resize_viewport(0, (0, 0))
+
 
 	# id and size are unused
 	def resize_viewport(self, id, size):
@@ -108,47 +124,61 @@ class InjectionUI():
 						dpg.add_text("0.0")
 						dpg.add_visible_handler(parent=id,
 							user_data=(dpg.last_item(), key, module),
-							callback=lambda id, _, data: dpg.set_value(data[0], data[2]._outputs[data[1]].get_value() ))
+							callback=lambda id, _, data: dpg.set_value(data[0], "{:.3f}".format(data[2]._outputs[data[1]].get_value()) ))
 
 	def add_output(self, output_controller, output=None):
 		#create output if not provided
 		if not output:
 			output = output_controller.add_output()
 
-		with dpg.group(parent="output_container", horizontal=True) as output_widget:
+		# with dpg.group(parent="output_container", horizontal=False, width=-1) as output_widget:
+		with dpg.group(parent="output_container", horizontal=False) as output_widget:
 
-			def drop_callback(id, data):
-				out = dpg.get_item_user_data(id)
-				key, module_output = data
+			# with dpg.table(header_row=False):
+			# 	dpg.add_table_column()
+			# 	dpg.add_table_column()
 
-				dpg.set_item_label(id, key)
-				out._input = module_output
+			with dpg.group(horizontal=True):
+				def drop_callback(id, data):
+					out = dpg.get_item_user_data(id)
+					key, module_output = data
 
-			dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
-				user_data=output,
-				drop_callback=drop_callback)
+					dpg.set_item_label(id, key)
+					out._input = module_output
 
-			def callback(id, _, user_data):
-				id_but, out = user_data
-				if out:
-					dpg.set_value(id_but, out.get_value())
+				dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
+					user_data=output,
+					drop_callback=drop_callback)
 
-			dpg.add_text("0.0")
-			dpg.add_visible_handler(parent=dpg.last_item(),
-				user_data=(dpg.last_item(), output),
-				callback=callback)
+				def callback(id, data, udata):
+					id_but, out = udata
+					if out:
+						dpg.set_value(id_but, out.get_value())
 
-			dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1,
-				user_data=output,
-				callback=lambda id, data, udata: udata.set_id(data))
-			dpg.add_checkbox(label="", user_data=output, callback=lambda id, value, udata : udata.switch(), default_value=False)
+				dpg.add_text("=")
+				dpg.add_text("0.0")
+				# dpg.add_input_int(default_value=0.0)
+				dpg.add_visible_handler(parent=dpg.last_item(),
+					user_data=(dpg.last_item(), output),
+					callback=callback)
 
-			def delete_callback(id, data, udata):
-				out, out_widget = udata
-				dpg.delete_item(out_widget)
-				output_controller.outputs.remove(out)
+			# dpg.add_table_next_column()
 
-			dpg.add_button(label="delete", user_data=(output, output_widget), width=75, height=20, callback=delete_callback)
+			with dpg.group(horizontal=True):
+
+				dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1,
+					user_data=output,
+					callback=lambda id, data, udata: udata.set_id(data))
+				dpg.add_checkbox(label="", user_data=output, callback=lambda id, value, udata : udata.switch(), default_value=False)
+
+				def delete_callback(id, data, udata):
+					out, out_widget = udata
+					dpg.delete_item(out_widget)
+					output_controller.outputs.remove(out)
+
+				dpg.add_button(label="X", user_data=(output, output_widget), width=20, callback=delete_callback)
+				dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #theme is declared in initialize()
+
 
 	def create_outputs_ui(self, output_controller):
 		# outputs container (so the + button can stay at the bottom)
@@ -159,7 +189,7 @@ class InjectionUI():
 			self.add_output(output_controller, output)
 
 		# add output button
-		dpg.add_button(parent="window_output", label="+", width=75, height=20,
+		dpg.add_button(parent="window_output", label="+", width=-1, height=20,
 			callback=lambda: self.add_output(output_controller, None))
 
 	def is_running(self):

@@ -4,11 +4,6 @@ import time
 
 import pygame
 
-# import dearpygui.dearpygui as dpg
-# from dearpygui.demo import show_demo
-# show_demo()
-# dpg.start_dearpygui()
-# exit()
 
 from injectionAPI import InjectionAPI
 
@@ -33,7 +28,6 @@ class InjectionApp:
 		pygame.joystick.init()
 
 		self.injectionAPI = InjectionAPI()
-		# self.injectionUI = None
 		self.injectionUI = InjectionUI()
 
 	def initialize(self):
@@ -74,10 +68,4 @@ if __name__ == '__main__':
 	main()
 
 """
-WINDOWS 10: problems to fix
-	! viewport not calling resize callback on start
-	-> manually call resize_viewport at start
-
-	! pygame completely breaking the program
-	-> call pygame.event.get() in loop
 """

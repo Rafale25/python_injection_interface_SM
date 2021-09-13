@@ -1,4 +1,5 @@
 import pygame
+import random, math #DEBUG
 
 class Input:
 	def __init__(self, joystick, id, input_type):
@@ -8,6 +9,8 @@ class Input:
 		self._input_type = input_type
 		self._value = 0.0
 		self._check_box = False
+
+		self.tmp_for_testing = 0.0
 
 	def __str__(self):
 		return "{} {}".format(self._input_type, self._id)
@@ -36,6 +39,9 @@ class Input:
 		elif self._input_type == 'hat':
 			new_value = self._joystick.get_hat(self._id)
 
+		self.tmp_for_testing += 0.01
+		new_value = math.sin(self.tmp_for_testing)
+		# print(new_value)
 		self._value = new_value
 
 class InputController:
