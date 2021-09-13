@@ -23,13 +23,10 @@ class OutputController:
 	def __init__(self):
 		self.outputs = [] #[Output]
 
-		#TODO: replace this by a button to add them dynamically
-		for i in range(4):
-			output = Output()
-			self.outputs.append(output)
-
 	def add_output(self):
-		pass
+		output = Output()
+		self.outputs.append(output)
+		return output
 
 	def send_outputs(self, injectionAPI):
 		for output in self.outputs:
