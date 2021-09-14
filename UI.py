@@ -30,20 +30,43 @@ class InjectionUI:
 				dpg.add_menu_item(label="Scan", callback=lambda: injectionAPI.scan())
 				dpg.add_menu_item(label="Poll", callback=lambda: injectionAPI.poll())
 
-			with dpg.window(
-				label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True, no_resize=True,
-				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
-				pass
+			with dpg.table(header_row=False):
+				dpg.add_table_column()
+				dpg.add_table_column()
+				dpg.add_table_column()
 
-			with dpg.window(
-				label="Module", id="window_module", no_move=True, no_collapse=True, no_close=True, no_resize=True,
-				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
-				pass
+				dpg.add_text("Input")
+				dpg.add_table_next_column()
+				dpg.add_text("Module")
+				dpg.add_table_next_column()
+				dpg.add_text("Output")
+				dpg.add_table_next_column()
 
-			with dpg.window(
-				label="Output", id="window_output", no_move=True, no_collapse=True, no_close=True, no_resize=True,
-				min_size=(VIEWPORT_WIDTH/3, VIEWPORT_HEIGHT)):
-				pass
+				with dpg.child(
+					label="Input", id="window_input"):
+					pass
+
+				dpg.add_table_next_column()
+				with dpg.child(
+					label="Module", id="window_module"):
+					pass
+
+				dpg.add_table_next_column()
+				with dpg.child(
+					label="Output", id="window_output"):
+					pass
+
+				# with dpg.window(
+				# 	label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True, no_resize=True):
+				# 	pass
+				#
+				# with dpg.window(
+				# 	label="Module", id="window_module", no_move=True, no_collapse=True, no_close=True, no_resize=True):
+				# 	pass
+				#
+				# with dpg.window(
+				# 	label="Output", id="window_output", no_move=True, no_collapse=True, no_close=True, no_resize=True):
+				# 	pass
 
 		dpg.setup_viewport()
 		dpg.set_viewport_title(title="SM Injector Interface")
@@ -54,18 +77,17 @@ class InjectionUI:
 		dpg.set_viewport_vsync(True)
 		dpg.set_viewport_resizable(True)
 
-		dpg.set_viewport_resize_callback(self.resize_viewport)
+		# dpg.set_viewport_resize_callback(self.resize_viewport)
 
 		dpg.set_primary_window("main_window", True)
 
-
-		with dpg.theme(default_theme=True):
-			dpg.add_theme_style(dpg.mvStyleVar_SelectableTextAlign, 5, category=dpg.mvThemeCat_Core)
-
 		# themes
+		with dpg.theme(id="theme_center_aligned", default_theme=True):
+			dpg.add_theme_style(dpg.mvStyleVar_WindowTitleAlign, x=0.5, y=0.5, category=dpg.mvThemeCat_Core)
+
 		with dpg.theme(id="theme_button_delete"):
 			dpg.add_theme_color(dpg.mvThemeCol_Button, (255, 140, 23), category=dpg.mvThemeCat_Core)
-			dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
+			# dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
 
 		# widgets
 		self.create_inputs_ui(input_controller)
@@ -73,7 +95,7 @@ class InjectionUI:
 		self.create_outputs_ui(output_controller)
 
 		# call resize at start because windows don't do it
-		self.resize_viewport(0, (0, 0))
+		# self.resize_viewport(0, (0, 0))
 
 	# id and size are unused
 	def resize_viewport(self, id, size):
@@ -83,7 +105,7 @@ class InjectionUI:
 		for i, window in enumerate(("window_input", "window_module", "window_output")):
 			dpg.set_item_pos(item=window, pos=((viewport_width / 3) * i, 20))
 			dpg.set_item_width(item=window, width=viewport_width / 3)
-			dpg.set_item_height(item=window, height=viewport_height)
+			dpg.set_item_height(item=window, height=viewport_height - 20)
 
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.get_inputs():
@@ -106,11 +128,12 @@ class InjectionUI:
 					user_data=(dpg.last_item(), inp),
 					callback=callback)
 
-
 	def create_modules_ui(self, module_controller):
 		for module in module_controller.get_modules():
 
-			with dpg.child(parent="window_module", height=200, border=True):
+			with dpg.collapsing_header(parent="window_module", label=module.get_name(), default_open=True) as yolo:
+				# dpg.set_item_theme(dpg.last_item(), "theme_item_spacing") #theme is declared in initialize()
+
 				# IN
 				dpg.add_text("IN", bullet=True)
 				for key, inp in module._inputs.items():

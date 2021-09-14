@@ -40,33 +40,33 @@ class DroneModule(Module):
 			if (motorNW + value <= max and motorNW + value >= -1000):
 				motorNW += value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorNE += value
+				motorNE += value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorSW -= value
+				motorSW -= value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorSE -= value
+				motorSE -= value
 
 			#roll :
 			value = (round(roll, 3)) * 1000
 			if (motorNW + value <= max and motorNW + value >= -1000):
-			    motorNW += value
+				motorNW += value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorNE -= value
+				motorNE -= value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorSW += value
+				motorSW += value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorSE -= value
+				motorSE -= value
 
 			#yaw :
 			value = (round(yaw, 3)) * (-1000)
 			if (motorNW + value <= max and motorNW + value >= -1000):
-			    motorNW += value
+				motorNW += value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorNE -= value
+				motorNE -= value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorSW -= value
+				motorSW -= value
 			if (motorNE + value <= max and motorNE + value >= -1000):
-			    motorSE += value
+				motorSE += value
 		else :
 			motorNW = 0
 			motorNE = 0

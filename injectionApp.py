@@ -49,6 +49,7 @@ class InjectionApp:
 			self.input_controller.update()
 			self.module_controller.compute()
 
+			# print()
 			# print(self.module_controller.module_instances[0]._inputs) #DEBUG
 			# print("\n".join(str(x) for x in self.output_controller.outputs))
 			# print()
@@ -69,5 +70,9 @@ if __name__ == '__main__':
 	main()
 
 """
-BUG where input can send to wrong module_input ??
+TODO:
+	- possibility to drag input directly into output
+
+
+- BUG where input can send to wrong module_input ??
 """
