@@ -4,7 +4,6 @@ import time
 
 import pygame
 
-
 from injectionAPI import InjectionAPI
 
 from module import Module
@@ -72,7 +71,6 @@ if __name__ == '__main__':
 """
 TODO:
 	- possibility to drag input directly into output
-
 
 - BUG where input can send to wrong module_input ??
 """

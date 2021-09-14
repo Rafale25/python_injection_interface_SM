@@ -1,5 +1,7 @@
 import pygame
-import random, math #DEBUG
+# import random, math #DEBUG
+
+from var import Var
 
 class Input:
 	def __init__(self, joystick, id, input_type):
@@ -8,19 +10,21 @@ class Input:
 
 		self._input_type = input_type
 		self._value = 0.0
-		self._check_box = False
+		# self._var = Var(0.0)
+		self._is_on = False
 		self._invert = False
-
-		# self.tmp_for_testing = 0.0
 
 	def __str__(self):
 		return "{} {}".format(self._input_type, self._id)
 
 	def __repr__(self):
-		return "{};{};{};{}".format(self._id, self._input_type, self._value, self._check_box)
+		return "{};{};{};{}".format(self._id, self._input_type, self._var, self._is_on)
 
 	def is_on(self):
-		return self._check_box
+		return self._is_on
+
+	# def get_var(self):
+	# 	return self._var
 
 	def get_value(self):
 		return self._value
@@ -29,7 +33,7 @@ class Input:
 		self._invert = not self._invert
 
 	def switch(self):
-		self._check_box = not self._check_box
+		self._is_on = not self._is_on
 
 	def update(self):
 		new_value = 0
@@ -43,12 +47,10 @@ class Input:
 		elif self._input_type == 'hat':
 			new_value = self._joystick.get_hat(self._id)
 
-		# self.tmp_for_testing += 0.01
-		# new_value = math.sin(self.tmp_for_testing)
-
 		if self._invert:
 			new_value = -new_value
 		self._value = new_value
+		# self._var.set_value(new_value)
 
 class InputController:
 	def __init__(self):

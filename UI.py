@@ -9,10 +9,7 @@ from output import OutputController
 
 import dearpygui.dearpygui as dpg
 
-# drag_payload
-class Payload:
-	def __init__(self):
-		pass
+from var import Var
 
 class InjectionUI:
 	def __init__(self, *args, **kwaargs):
@@ -24,49 +21,41 @@ class InjectionUI:
 		VIEWPORT_MIN_WIDTH = 600
 		VIEWPORT_MIN_HEIGHT = 200
 
-		with dpg.window(id="main_window", menubar=True):
+		## themes ##
+		with dpg.theme(id="theme_center_aligned", default_theme=True):
+			dpg.add_theme_style(dpg.mvStyleVar_WindowTitleAlign, x=0.5, y=0.5, category=dpg.mvThemeCat_Core)
 
+		with dpg.theme(id="theme_button_delete"):
+			dpg.add_theme_color(dpg.mvThemeCol_Button, (255, 140, 23), category=dpg.mvThemeCat_Core)
+
+
+		with dpg.window(id="main_window", menubar=True):
 			with dpg.menu_bar():
 				dpg.add_menu_item(label="Scan", callback=lambda: injectionAPI.scan())
 				dpg.add_menu_item(label="Poll", callback=lambda: injectionAPI.poll())
 
-			with dpg.table(header_row=False):
-				dpg.add_table_column()
-				dpg.add_table_column()
-				dpg.add_table_column()
+			with dpg.table(header_row=True, row_background=False,
+				borders_innerH=False, borders_outerH=False,
+				borders_innerV=True, borders_outerV=False, scrollY=False):
 
-				dpg.add_text("Input")
-				dpg.add_table_next_column()
-				dpg.add_text("Module")
-				dpg.add_table_next_column()
-				dpg.add_text("Output")
-				dpg.add_table_next_column()
+				dpg.add_table_column(label="Input")
+				dpg.add_table_column(label="Module")
+				dpg.add_table_column(label="Output")
 
-				with dpg.child(
-					label="Input", id="window_input"):
+				# for spacing under header_row
+				for i in range(3*2):
+					dpg.add_table_next_column()
+
+				with dpg.child(label="Input", id="window_input", border=False):
 					pass
 
 				dpg.add_table_next_column()
-				with dpg.child(
-					label="Module", id="window_module"):
+				with dpg.child(label="Module", id="window_module", border=False):
 					pass
 
 				dpg.add_table_next_column()
-				with dpg.child(
-					label="Output", id="window_output"):
+				with dpg.child(label="Output", id="window_output", border=False):
 					pass
-
-				# with dpg.window(
-				# 	label="Input", id="window_input", no_move=True, no_collapse=True, no_close=True, no_resize=True):
-				# 	pass
-				#
-				# with dpg.window(
-				# 	label="Module", id="window_module", no_move=True, no_collapse=True, no_close=True, no_resize=True):
-				# 	pass
-				#
-				# with dpg.window(
-				# 	label="Output", id="window_output", no_move=True, no_collapse=True, no_close=True, no_resize=True):
-				# 	pass
 
 		dpg.setup_viewport()
 		dpg.set_viewport_title(title="SM Injector Interface")
@@ -77,35 +66,12 @@ class InjectionUI:
 		dpg.set_viewport_vsync(True)
 		dpg.set_viewport_resizable(True)
 
-		# dpg.set_viewport_resize_callback(self.resize_viewport)
-
 		dpg.set_primary_window("main_window", True)
 
-		# themes
-		with dpg.theme(id="theme_center_aligned", default_theme=True):
-			dpg.add_theme_style(dpg.mvStyleVar_WindowTitleAlign, x=0.5, y=0.5, category=dpg.mvThemeCat_Core)
-
-		with dpg.theme(id="theme_button_delete"):
-			dpg.add_theme_color(dpg.mvThemeCol_Button, (255, 140, 23), category=dpg.mvThemeCat_Core)
-			# dpg.add_theme_style(dpg.mvStyleVar_FrameRounding, 5, category=dpg.mvThemeCat_Core)
-
-		# widgets
+		## widgets ##
 		self.create_inputs_ui(input_controller)
 		self.create_modules_ui(module_controller)
 		self.create_outputs_ui(output_controller)
-
-		# call resize at start because windows don't do it
-		# self.resize_viewport(0, (0, 0))
-
-	# id and size are unused
-	def resize_viewport(self, id, size):
-		viewport_width = dpg.get_viewport_width()
-		viewport_height = dpg.get_viewport_height()
-
-		for i, window in enumerate(("window_input", "window_module", "window_output")):
-			dpg.set_item_pos(item=window, pos=((viewport_width / 3) * i, 20))
-			dpg.set_item_width(item=window, width=viewport_width / 3)
-			dpg.set_item_height(item=window, height=viewport_height - 20)
 
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.get_inputs():
@@ -131,7 +97,7 @@ class InjectionUI:
 	def create_modules_ui(self, module_controller):
 		for module in module_controller.get_modules():
 
-			with dpg.collapsing_header(parent="window_module", label=module.get_name(), default_open=True) as yolo:
+			with dpg.collapsing_header(parent="window_module", label=module.get_name(), default_open=True):
 				# dpg.set_item_theme(dpg.last_item(), "theme_item_spacing") #theme is declared in initialize()
 
 				# IN
@@ -164,6 +130,9 @@ class InjectionUI:
 							user_data=(dpg.last_item(), key, module),
 							callback=lambda id, _, data: dpg.set_value(data[0], "{:.3f}".format(data[2]._outputs[data[1]].get_value()) ))
 
+				dpg.add_dummy(height=10) # spacing
+				dpg.add_separator()
+
 	def add_output(self, output_controller, output=None):
 		#create output if not provided
 		if not output:
@@ -171,10 +140,6 @@ class InjectionUI:
 
 		# with dpg.group(parent="output_container", horizontal=False, width=-1) as output_widget:
 		with dpg.group(parent="output_container", horizontal=False) as output_widget:
-
-			# with dpg.table(header_row=False):
-			# 	dpg.add_table_column()
-			# 	dpg.add_table_column()
 
 			with dpg.group(horizontal=True):
 				def drop_callback(id, data):
@@ -237,3 +202,12 @@ class InjectionUI:
 
 	def cleanup(self):
 		dpg.cleanup_dearpygui()
+
+"""
+TODO:
+	- center text
+	- add padding to table
+
+	- make input item look better
+	- make output item look better
+"""
