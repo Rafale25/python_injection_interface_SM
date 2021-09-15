@@ -99,7 +99,6 @@ class InjectionUI:
 		for module in module_controller.get_modules():
 
 			with dpg.collapsing_header(parent="window_module", label=module.get_name(), default_open=True):
-				# dpg.set_item_theme(dpg.last_item(), "theme_item_spacing") #theme is declared in initialize()
 
 				# IN
 				dpg.add_text("IN", bullet=True)
@@ -126,7 +125,6 @@ class InjectionUI:
 						dpg.add_button(label=key)
 						with dpg.drag_payload(parent=dpg.last_item(), drag_data=(key, out), payload_type="data"):
 							dpg.add_text(key)
-						print(out)
 
 						dpg.add_text("0.0")
 						dpg.add_visible_handler(parent=dpg.last_item(),
@@ -162,12 +160,9 @@ class InjectionUI:
 
 				dpg.add_text("=")
 				dpg.add_text("0.0")
-				# dpg.add_input_int(default_value=0.0)
 				dpg.add_visible_handler(parent=dpg.last_item(),
 					user_data=(dpg.last_item(), output),
 					callback=callback)
-
-			# dpg.add_table_next_column()
 
 			with dpg.group(horizontal=True):
 

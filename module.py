@@ -83,5 +83,3 @@ class ModuleController:
 	def compute(self):
 		for module in self.module_instances:
 			module.compute()
-			print(module)
-			print()
