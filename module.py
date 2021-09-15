@@ -8,7 +8,10 @@ class Module:
 	def __init__(self):
 		self._name = ""
 		self._inputs = dict() #{key: Input}
-		self._outputs = dict() #{key: Float}
+		self._outputs = dict() #{key: Var}
+
+	def __str__(self):
+		return "{}\n{}\n{}".format(self._name, self._inputs, self._outputs)
 
 	def set_name(self, str):
 		self._name = str
@@ -80,3 +83,5 @@ class ModuleController:
 	def compute(self):
 		for module in self.module_instances:
 			module.compute()
+			print(module)
+			print()

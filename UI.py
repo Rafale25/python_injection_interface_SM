@@ -126,6 +126,7 @@ class InjectionUI:
 						dpg.add_button(label=key)
 						with dpg.drag_payload(parent=dpg.last_item(), drag_data=(key, out), payload_type="data"):
 							dpg.add_text(key)
+						print(out)
 
 						dpg.add_text("0.0")
 						dpg.add_visible_handler(parent=dpg.last_item(),

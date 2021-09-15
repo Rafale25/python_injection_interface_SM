@@ -23,4 +23,4 @@ class ExampleModule(Module):
 		# -- Do stuff here -- #
 
 		## set value of output
-		self.set_output("exampleOutput", 42)
+		self.set_output("exampleOutput", input_value)
