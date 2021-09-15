@@ -70,7 +70,5 @@ if __name__ == '__main__':
 
 """
 TODO:
-	- possibility to drag input directly into output
-
 - BUG where input can send to wrong module_input ??
 """

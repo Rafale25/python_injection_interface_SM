@@ -11,6 +11,19 @@ import dearpygui.dearpygui as dpg
 
 from var import Var
 
+# class LayoutHelper:
+# 	def __init__(self):
+# 		self.table_id = dpg.add_table(header_row=False, policy=dpg.mvTable_SizingStretchProp)
+# 		dpg.push_container_stack(self.table_id)
+#
+# 	def add_widget(self, uuid, percentage):
+# 		dpg.add_table_column(init_width_or_weight=percentage/100.0, parent=self.table_id)
+# 		dpg.add_table_next_column(parent=self.table_id)
+# 		dpg.set_item_width(uuid, -1)
+#
+# 	def submit(self):
+# 		dpg.pop_container_stack()
+
 class InjectionUI:
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
@@ -75,16 +88,38 @@ class InjectionUI:
 
 	#NOTE: Payload of data are always a tuple with (string, Var)
 	def create_inputs_ui(self, input_controller):
-		for inp in input_controller.get_inputs():
-			with dpg.group(parent="window_input", horizontal=True):
+
+		with dpg.table(parent="window_input", header_row=False,
+			borders_innerH=True, borders_outerH=True, borders_innerV=True, borders_outerV=True, policy=dpg.mvTable_SizingStretchProp):
+
+			# mytable = LayoutHelper()
+			# mytable.add_widget(dpg.add_button(label="25%"), 25.0)
+			# mytable.add_widget(dpg.add_button(label="75%"), 75.0)
+			# mytable.submit()
+			# dpg.add_table_column(width_fixed=True, init_width_or_weight=0.0)#width_fixed=True)#, no_clip=True, width_stretch=True)
+			dpg.add_table_column(init_width_or_weight=1, width_stretch=True)#, no_clip=True, )
+			dpg.add_table_column()
+			dpg.add_table_column()
+			dpg.add_table_column()
+
+			for inp in input_controller.get_inputs():
+				# with dpg.group(parent="window_input", horizontal=True):
+				# with dpg.table(parent="window_input", header_row=False):
+
 				dpg.add_button(label=str(inp))
 				# with dpg.tooltip(parent=dpg.last_item()):
 				# 	dpg.add_text("LOT OF DATA HERE")
 				with dpg.drag_payload(parent=dpg.last_item(), drag_data=(str(inp), inp.get_var()), payload_type="data"):
 					dpg.add_text(str(inp))
+
+
+				dpg.add_table_next_column()
 				dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.switch(), default_value=False)
+				dpg.add_table_next_column()
 				dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.invert(), default_value=False)
 
+
+				dpg.add_table_next_column()
 				# visible value callback
 				def callback(id, data, udata):
 					text_id, inpp = udata
@@ -94,6 +129,9 @@ class InjectionUI:
 				dpg.add_visible_handler(parent=dpg.last_item(),
 					user_data=(dpg.last_item(), inp),
 					callback=callback)
+
+				dpg.add_table_next_column()
+
 
 	def create_modules_ui(self, module_controller):
 		for module in module_controller.get_modules():
@@ -177,7 +215,7 @@ class InjectionUI:
 					output_controller.outputs.remove(out)
 
 				dpg.add_button(label="X", user_data=(output, output_widget), width=20, callback=delete_callback)
-				dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #theme is declared in initialize()
+				dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #themes are declared in initialize()
 
 	def create_outputs_ui(self, output_controller):
 		# outputs container (so the + button can stay at the bottom)
@@ -202,7 +240,6 @@ class InjectionUI:
 
 """
 TODO:
-	- use generic payload
 	- center text
 	- add padding to table
 
