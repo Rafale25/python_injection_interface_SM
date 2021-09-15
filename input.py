@@ -9,12 +9,11 @@ class Input:
 		self._id = id
 
 		self._input_type = input_type
-		# self._value = 0.0
 		self._var = Var(0.0)
 		self._is_on = False
 		self._invert = False
 
-		self.tmp = 0.0 #DEBUG
+		# self.tmp = 0.0 #DEBUG
 
 	def __str__(self):
 		return "{} {}".format(self._input_type, self._id)
@@ -29,7 +28,6 @@ class Input:
 		return self._var
 
 	def get_value(self):
-		# return self._value
 		return self._var.get_value()
 
 	def invert(self):
@@ -50,12 +48,11 @@ class Input:
 		elif self._input_type == 'hat':
 			new_value = self._joystick.get_hat(self._id)
 
-		self.tmp += 0.01
-		new_value = (math.sin(self.tmp) + 1)/2
+		# self.tmp += 0.01
+		# new_value = (math.sin(self.tmp) + 1)/2
 
 		if self._invert:
 			new_value = -new_value
-		# self._value = new_value
 		self._var.set_value(new_value)
 
 class InputController:
@@ -95,5 +92,4 @@ class InputController:
 			if inp.is_on():
 				inp.update()
 			else:
-				# inp._value = 0.0
 				inp._var.set_value(0.0)
