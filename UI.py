@@ -138,7 +138,6 @@ class InjectionUI:
 		if not output:
 			output = output_controller.add_output()
 
-		# with dpg.group(parent="output_container", horizontal=False, width=-1) as output_widget:
 		with dpg.group(parent="output_container", horizontal=False) as output_widget:
 
 			with dpg.group(horizontal=True):
@@ -156,7 +155,7 @@ class InjectionUI:
 				def callback(id, data, udata):
 					id_but, out = udata
 					if out:
-						dpg.set_value(id_but, out.get_value())
+						dpg.set_value(id_but, "{:.3f}".format(out.get_value()))
 
 				dpg.add_text("=")
 				dpg.add_text("0.0")
@@ -205,6 +204,7 @@ class InjectionUI:
 
 """
 TODO:
+	- use generic payload
 	- center text
 	- add padding to table
 

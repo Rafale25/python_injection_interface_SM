@@ -1,25 +1,28 @@
 import os
 import importlib
 
-class FloatVar:
-	def __init__(self, value):
-		self._value = value
+# from var import Var
+import var
 
-	def __str__(self):
-		return "{}".format(self._value)
-
-	def get_value(self):
-		return self._value
-
-	def set_value(self, value):
-		self._value = value
+# class FloatVar:
+# 	def __init__(self, value):
+# 		self._value = value
+#
+# 	def __str__(self):
+# 		return "{}".format(self._value)
+#
+# 	def get_value(self):
+# 		return self._value
+#
+# 	def set_value(self, value):
+# 		self._value = value
 
 # MODULES --
 class Module:
 	def __init__(self):
 		self._name = ""
 		self._inputs = dict() #{key: Input}
-		self._outputs = dict() #{key: FloatVar}
+		self._outputs = dict() #{key: Var}
 
 	def set_name(self, str):
 		self._name = str
@@ -45,7 +48,7 @@ class Module:
 		return self._outputs
 
 	def add_output(self, key):
-		self._outputs[key] = FloatVar(0.0)
+		self._outputs[key] = var.Var(0.0)
 
 	def set_output(self, key, value):
 		self._outputs[key].set_value(value)

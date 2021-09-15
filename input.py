@@ -1,5 +1,5 @@
 import pygame
-# import random, math #DEBUG
+import math #DEBUG
 
 from var import Var
 
@@ -13,6 +13,8 @@ class Input:
 		# self._var = Var(0.0)
 		self._is_on = False
 		self._invert = False
+
+		self.tmp = 0.0 #DEBUG
 
 	def __str__(self):
 		return "{} {}".format(self._input_type, self._id)
@@ -46,6 +48,9 @@ class Input:
 			new_value = self._joystick.get_button(self._id)
 		elif self._input_type == 'hat':
 			new_value = self._joystick.get_hat(self._id)
+
+		self.tmp += 0.01
+		new_value = (math.sin(self.tmp) + 1)/2
 
 		if self._invert:
 			new_value = -new_value
