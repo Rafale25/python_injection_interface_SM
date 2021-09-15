@@ -1,28 +1,14 @@
 import os
 import importlib
 
-# from var import Var
-import var
-
-# class FloatVar:
-# 	def __init__(self, value):
-# 		self._value = value
-#
-# 	def __str__(self):
-# 		return "{}".format(self._value)
-#
-# 	def get_value(self):
-# 		return self._value
-#
-# 	def set_value(self, value):
-# 		self._value = value
+from var import Var
 
 # MODULES --
 class Module:
 	def __init__(self):
 		self._name = ""
 		self._inputs = dict() #{key: Input}
-		self._outputs = dict() #{key: Var}
+		self._outputs = dict() #{key: Float}
 
 	def set_name(self, str):
 		self._name = str
@@ -30,25 +16,25 @@ class Module:
 	def get_name(self):
 		return self._name
 
-	def get_outputs_keys(self):
-		return [key for key, value in self._outputs.items()]
+	# def get_outputs_keys(self):
+	# 	return [key for key, value in self._outputs.items()]
 
-	def get_inputs_dict(self):
-		return self._inputs
+	# def get_inputs_dict(self):
+	# 	return self._inputs
+
+	# def get_outputs_dict(self):
+	# 	return self._outputs
 
 	def add_input(self, key):
 		self._inputs[key] = None
+
+	def add_output(self, key):
+		self._outputs[key] = Var(0.0)
 
 	def get_input(self, key):
 		if self._inputs[key] != None:
 			return self._inputs[key].get_value()
 		return 0.0
-
-	def get_outputs_dict(self):
-		return self._outputs
-
-	def add_output(self, key):
-		self._outputs[key] = var.Var(0.0)
 
 	def set_output(self, key, value):
 		self._outputs[key].set_value(value)

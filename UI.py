@@ -73,21 +73,22 @@ class InjectionUI:
 		self.create_modules_ui(module_controller)
 		self.create_outputs_ui(output_controller)
 
+	#NOTE: Payload of data are always a tuple with (string, Var)
 	def create_inputs_ui(self, input_controller):
 		for inp in input_controller.get_inputs():
 			with dpg.group(parent="window_input", horizontal=True):
 				dpg.add_button(label=str(inp))
 				# with dpg.tooltip(parent=dpg.last_item()):
 				# 	dpg.add_text("LOT OF DATA HERE")
-				with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
+				with dpg.drag_payload(parent=dpg.last_item(), drag_data=(str(inp), inp.get_var()), payload_type="data"):
 					dpg.add_text(str(inp))
 				dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.switch(), default_value=False)
 				dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.invert(), default_value=False)
 
 				# visible value callback
 				def callback(id, data, udata):
-					text_id, input_o = udata
-					dpg.set_value(text_id, "{:g}".format(input_o.get_value()))
+					text_id, inpp = udata
+					dpg.set_value(text_id, "{:g}".format(inpp.get_value()))
 
 				dpg.add_text("0")
 				dpg.add_visible_handler(parent=dpg.last_item(),
@@ -107,10 +108,11 @@ class InjectionUI:
 
 						def drop_callback(id, data):
 							input_key, mod = dpg.get_item_user_data(id)
+							str, var = data #payload
 
 							if input_key in mod._inputs:
-								mod._inputs[input_key] = data
-							dpg.set_item_label(id, str(data))
+								mod._inputs[input_key] = var
+							dpg.set_item_label(id, str)
 
 						dpg.add_text(key)
 						dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
@@ -142,11 +144,11 @@ class InjectionUI:
 
 			with dpg.group(horizontal=True):
 				def drop_callback(id, data):
-					out = dpg.get_item_user_data(id)
-					key, module_output = data
+					out_widget = dpg.get_item_user_data(id)
+					key, out = data
 
 					dpg.set_item_label(id, key)
-					out._input = module_output
+					out_widget._input = out
 
 				dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
 					user_data=output,

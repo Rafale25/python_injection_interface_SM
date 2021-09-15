@@ -9,8 +9,8 @@ class Input:
 		self._id = id
 
 		self._input_type = input_type
-		self._value = 0.0
-		# self._var = Var(0.0)
+		# self._value = 0.0
+		self._var = Var(0.0)
 		self._is_on = False
 		self._invert = False
 
@@ -25,11 +25,12 @@ class Input:
 	def is_on(self):
 		return self._is_on
 
-	# def get_var(self):
-	# 	return self._var
+	def get_var(self):
+		return self._var
 
 	def get_value(self):
-		return self._value
+		# return self._value
+		return self._var.get_value()
 
 	def invert(self):
 		self._invert = not self._invert
@@ -54,8 +55,8 @@ class Input:
 
 		if self._invert:
 			new_value = -new_value
-		self._value = new_value
-		# self._var.set_value(new_value)
+		# self._value = new_value
+		self._var.set_value(new_value)
 
 class InputController:
 	def __init__(self):
@@ -94,4 +95,5 @@ class InputController:
 			if inp.is_on():
 				inp.update()
 			else:
-				inp._value = 0.0
+				# inp._value = 0.0
+				inp._var.set_value(0.0)
