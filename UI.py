@@ -252,6 +252,5 @@ TODO:
 	- center text
 	- add padding to table
 
-	- make input item look better
 	- make output item look better
 """
