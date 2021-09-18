@@ -11,25 +11,12 @@ import dearpygui.dearpygui as dpg
 
 from var import Var
 
-# class LayoutHelper:
-# 	def __init__(self):
-# 		self.table_id = dpg.add_table(header_row=False, policy=dpg.mvTable_SizingStretchProp)
-# 		dpg.push_container_stack(self.table_id)
-#
-# 	def add_widget(self, uuid, percentage):
-# 		dpg.add_table_column(init_width_or_weight=percentage/100.0, parent=self.table_id)
-# 		dpg.add_table_next_column(parent=self.table_id)
-# 		dpg.set_item_width(uuid, -1)
-#
-# 	def submit(self):
-# 		dpg.pop_container_stack()
-
 class InjectionUI:
 	def __init__(self, *args, **kwaargs):
 		super().__init__(*args, **kwaargs)
 
 	def initialize(self, injectionAPI, input_controller, module_controller, output_controller):
-		VIEWPORT_WIDTH = 800
+		VIEWPORT_WIDTH = 900
 		VIEWPORT_HEIGHT = 600
 		VIEWPORT_MIN_WIDTH = 600
 		VIEWPORT_MIN_HEIGHT = 200
@@ -89,20 +76,17 @@ class InjectionUI:
 	#NOTE: Payload of data are always a tuple with (string, Var)
 	def create_inputs_ui(self, input_controller):
 
+		# joystick input
 		with dpg.collapsing_header(parent="window_input", label="Joystick", default_open=True):
+			with dpg.table(header_row=True,
+				borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False):
 
-			with dpg.table(header_row=False,
-				borders_innerH=True, borders_outerH=True, borders_innerV=True, borders_outerV=True, policy=dpg.mvTable_SizingStretchProp):
-
-				dpg.add_table_column()#, no_clip=True, )
-				dpg.add_table_column()
-				dpg.add_table_column()
-				dpg.add_table_column()
+				dpg.add_table_column(label="", width_fixed=True)
+				dpg.add_table_column(label="on/off", width_fixed=True)
+				dpg.add_table_column(label="invert", width_fixed=True)
+				dpg.add_table_column(label="value", width_fixed=False)
 
 				for inp in input_controller.get_inputs():
-					# with dpg.group(parent="window_input", horizontal=True):
-					# with dpg.table(parent="window_input", header_row=False):
-
 					dpg.add_button(label=str(inp))
 					# with dpg.tooltip(parent=dpg.last_item()):
 					# 	dpg.add_text("LOT OF DATA HERE")
@@ -129,6 +113,7 @@ class InjectionUI:
 
 					dpg.add_table_next_column()
 
+		# Scrap Mechanic injector ouput
 		with dpg.collapsing_header(parent="window_input", label="SM Output", default_open=True):
 			pass
 
@@ -137,38 +122,52 @@ class InjectionUI:
 
 			with dpg.collapsing_header(parent="window_module", label=module.get_name(), default_open=True):
 
-				# IN
-				dpg.add_text("IN", bullet=True)
-				for key, inp in module._inputs.items():
-					with dpg.group(horizontal=True):
+				dpg.add_text("IN", bullet=True) # IN
+
+				with dpg.table(header_row=False,
+					borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False):
+
+					dpg.add_table_column(label="", width_fixed=True)
+					dpg.add_table_column(label="", width_fixed=False)
+
+					for key, inp in module._inputs.items():
 
 						def drop_callback(id, data):
 							input_key, mod = dpg.get_item_user_data(id)
 							str, var = data #payload
-
 							if input_key in mod._inputs:
 								mod._inputs[input_key] = var
 							dpg.set_item_label(id, str)
 
 						dpg.add_text(key)
+						dpg.add_table_next_column()
 						dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
 							user_data=(key, module), drop_callback=drop_callback)
+						dpg.add_table_next_column()
 
 				# OUT
 				dpg.add_text("OUT", bullet=True)
-				for key, out in module._outputs.items():
-					with dpg.group(horizontal=True):
 
+				with dpg.table(header_row=False,
+					borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False):
+
+					dpg.add_table_column(width_fixed=True)
+					dpg.add_table_column(width_fixed=False)
+
+					for key, out in module._outputs.items():
 						dpg.add_button(label=key)
 						with dpg.drag_payload(parent=dpg.last_item(), drag_data=(key, out), payload_type="data"):
 							dpg.add_text(key)
 
+						dpg.add_table_next_column()
 						dpg.add_text("0.0")
 						dpg.add_visible_handler(parent=dpg.last_item(),
 							user_data=(dpg.last_item(), key, module),
 							callback=lambda id, _, data: dpg.set_value(data[0], "{:.3f}".format(data[2]._outputs[data[1]].get_value()) ))
+						dpg.add_table_next_column()
 
-				dpg.add_dummy(height=10) # spacing
+				 # add spacing between modules
+				dpg.add_dummy(height=20)
 				dpg.add_separator()
 
 	def add_output(self, output_controller, output=None):
@@ -176,52 +175,56 @@ class InjectionUI:
 		if not output:
 			output = output_controller.add_output()
 
-		with dpg.group(parent="output_container", horizontal=False) as output_widget:
+		with dpg.table(parent="output_container", header_row=False,
+			borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False) as output_widget:
 
-			with dpg.group(horizontal=True):
-				def drop_callback(id, data):
-					out_widget = dpg.get_item_user_data(id)
-					key, out = data
+			dpg.add_table_column(label="in", width_fixed=True)
+			dpg.add_table_column(label="value", width_fixed=True)
+			dpg.add_table_column(label="id", width_fixed=True)
+			dpg.add_table_column(label="on/off", width_fixed=True)
+			dpg.add_table_column(label="delete", width_fixed=True)
 
-					dpg.set_item_label(id, key)
-					out_widget._input = out
+			def drop_callback(id, data):
+				out_widget = dpg.get_item_user_data(id)
+				key, out = data
 
-				dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
-					user_data=output,
-					drop_callback=drop_callback)
+				dpg.set_item_label(id, key)
+				out_widget._input = out
 
-				def callback(id, data, udata):
-					id_but, out = udata
-					if out:
-						dpg.set_value(id_but, "{:.3f}".format(out.get_value()))
+			# payload input
+			dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
+				user_data=output,
+				drop_callback=drop_callback)
 
-				dpg.add_text("=")
-				dpg.add_text("0.0")
-				dpg.add_visible_handler(parent=dpg.last_item(),
-					user_data=(dpg.last_item(), output),
-					callback=callback)
+			def callback(id, data, udata):
+				id_but, out = udata
+				if out:
+					dpg.set_value(id_but, "{:.3f}".format(out.get_value()))
 
-			with dpg.group(horizontal=True):
+			dpg.add_table_next_column()
+			dpg.add_text("0.0")
+			dpg.add_visible_handler(parent=dpg.last_item(),
+				user_data=(dpg.last_item(), output),
+				callback=callback)
 
-				dpg.add_input_int(default_value=0, width=100, min_value=0, max_value=255, step=1,
-					user_data=output,
-					callback=lambda id, data, udata: udata.set_id(data))
-				dpg.add_checkbox(label="", user_data=output, callback=lambda id, value, udata : udata.switch(), default_value=False)
+			dpg.add_table_next_column()
+			dpg.add_input_int(default_value=0, width=75, min_value=0, max_value=255, step=1,
+				user_data=output,
+				callback=lambda id, data, udata: udata.set_id(data))
 
-				def delete_callback(id, data, udata):
-					out, out_widget = udata
-					dpg.delete_item(out_widget)
-					output_controller.outputs.remove(out)
+			dpg.add_table_next_column()
+			dpg.add_checkbox(label="", user_data=output, callback=lambda id, value, udata : udata.switch(), default_value=False)
 
-				dpg.add_button(label="X", user_data=(output, output_widget), width=20, callback=delete_callback)
-				dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #themes are declared in initialize()
-		with dpg.group(parent="window_output", id="output_container"):
-			pass
+			def delete_callback(id, data, udata):
+				out, out_widget = udata
+				dpg.delete_item(out_widget)
+				output_controller.outputs.remove(out)
 
-		# add output button
-		dpg.add_button(parent="window_output", label="+", width=-1, height=20,
-			callback=lambda: self.add_output(output_controller, None))
+			dpg.add_table_next_column()
+			dpg.add_button(label="X", user_data=(output, output_widget), width=20, callback=delete_callback)
+			dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #themes are declared in initialize()
 
+			dpg.add_table_next_column()
 
 	def create_outputs_ui(self, output_controller):
 		# outputs container (so the + button can stay at the bottom)

@@ -12,10 +12,10 @@ class DroneModule(Module):
 		self.add_input('yaw')
 		self.add_input('arm_sw')
 
-		self.add_output("motorSE")	# 1 (old 4)
-		self.add_output("motorNE")	# 2 (old 2)
-		self.add_output("motorSW")	# 3 (old 3)
-		self.add_output("motorNW")	# 4 (old 1)
+		self.add_output("motorSEZZZ") # 1 (old 4)
+		self.add_output("motorNE") # 2 (old 2)
+		self.add_output("motorSW") # 3 (old 3)
+		self.add_output("motorNW") # 4 (old 1)
 
 	def compute(self):
 		thrust = self.get_input('thrust')
@@ -76,4 +76,4 @@ class DroneModule(Module):
 		self.set_output("motorNW", motorNW)
 		self.set_output("motorNE", motorNE)
 		self.set_output("motorSW", motorSW)
-		self.set_output("motorSE", motorSE)
+		self.set_output("motorSEZZZ", motorSE)
