@@ -12,7 +12,7 @@ class InjectionAPI:
 		self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
 		self.address = ('127.0.0.1', 25752)
 
-		self.socket.settimeout(1)
+		self.socket.settimeout(1) #1 second timeout
 
 	def start(self):
 		try:
