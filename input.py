@@ -66,6 +66,7 @@ class InputController:
 		self.joystick_count = pygame.joystick.get_count()
 		self.joysticks = [pygame.joystick.Joystick(i) for i in range(self.joystick_count)]
 
+
 	def init_inputs(self):
 		for joystick in self.joysticks:
 			for i in range(joystick.get_numballs()):
