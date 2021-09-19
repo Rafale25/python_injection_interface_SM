@@ -28,11 +28,10 @@ class InjectionUI:
 		with dpg.theme(id="theme_button_delete"):
 			dpg.add_theme_color(dpg.mvThemeCol_Button, (255, 140, 23), category=dpg.mvThemeCat_Core)
 
-
 		with dpg.window(id="main_window", menubar=True):
 			with dpg.menu_bar():
-				dpg.add_menu_item(label="Scan", callback=lambda: injectionAPI.scan())
-				dpg.add_menu_item(label="Poll", callback=lambda: injectionAPI.poll())
+				dpg.add_menu_item(label="Scan", callback=injectionAPI.scan)
+				dpg.add_menu_item(label="Poll", callback=injectionAPI.poll)
 
 			with dpg.table(header_row=True, row_background=False,
 				borders_innerH=False, borders_outerH=False,
@@ -115,6 +114,15 @@ class InjectionUI:
 
 		# Scrap Mechanic injector ouput
 		with dpg.collapsing_header(parent="window_input", label="SM Output", default_open=True):
+			with dpg.group(parent="window_input", id="injector_input_container"):
+				pass
+
+			# add output button
+			# dpg.add_button(label="+", width=-1, height=20)
+			# 	callback=lambda: self.add_output(output_controller, None))
+
+		 # Misc (for adding custom values)
+		with dpg.collapsing_header(parent="window_input", label="Misc", default_open=True):
 			pass
 
 	def create_modules_ui(self, module_controller):

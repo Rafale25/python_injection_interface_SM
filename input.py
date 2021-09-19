@@ -7,8 +7,8 @@ class Input:
 	def __init__(self, joystick, id, input_type):
 		self._joystick = joystick
 		self._id = id
-
 		self._input_type = input_type
+
 		self._var = Var(0.0)
 		self._is_on = False
 		self._invert = False
@@ -65,8 +65,6 @@ class InputController:
 	def scan_joysticks(self):
 		self.joystick_count = pygame.joystick.get_count()
 		self.joysticks = [pygame.joystick.Joystick(i) for i in range(self.joystick_count)]
-		# for joystick in self.joysticks:
-		# 	joystick.init()
 
 	def init_inputs(self):
 		for joystick in self.joysticks:
