@@ -1,19 +1,25 @@
 import pygame
-import math #DEBUG
+# import math #DEBUG
 
 from var import Var
 
-class Input:
+# class VarMisc(Var):
+# 	def __init__():
+# 		self.
+
+#gamepad
+class Input(Var):
 	def __init__(self, joystick, id, input_type):
 		self._joystick = joystick
 		self._id = id
 		self._input_type = input_type
 
-		self._var = Var(0.0)
+		# self._var = Var(0.0)
 		self._is_on = False
 		self._invert = False
 
 		# self.tmp = 0.0 #DEBUG
+		self.set_name(str(self))
 
 	def __str__(self):
 		return "{} {}".format(self._input_type, self._id)
@@ -24,11 +30,11 @@ class Input:
 	def is_on(self):
 		return self._is_on
 
-	def get_var(self):
-		return self._var
+	# def get_var(self):
+	# 	return self._var
 
-	def get_value(self):
-		return self._var.get_value()
+	# def get_value(self):
+	# 	return self._var.get_value()
 
 	def invert(self):
 		self._invert = not self._invert
@@ -53,16 +59,33 @@ class Input:
 
 		if self._invert:
 			new_value = -new_value
-		self._var.set_value(new_value)
+		# self._var.set_value(new_value)
+		self.set_value(new_value)
 
 class InputController:
 	def __init__(self):
+		#gamepads
 		self.inputs = []
 		self.joysticks = []
+
+		#SM_output
+		# self.inputs_SMoutput = []
+
+		#Misc
+		self.inputs_misc = []
 
 	def scan_joysticks(self):
 		joystick_count = pygame.joystick.get_count()
 		self.joysticks = [pygame.joystick.Joystick(i) for i in range(joystick_count)]
+
+	# add misc input to list
+	def add_misc(self):
+		misc = Var()
+		self.inputs_misc.append(misc)
+		return misc
+
+	# def add_SMoutput(self):
+		# pass
 
 	def init_inputs(self):
 		for joystick in self.joysticks:
@@ -82,12 +105,10 @@ class InputController:
 	def get_inputs(self):
 		return self.inputs
 
-	def get_inputs_name_id(self):
-		return [str(inp) for inp in self.inputs]
-
 	def update(self):
 		for inp in self.inputs:
 			if inp.is_on():
 				inp.update()
 			else:
-				inp._var.set_value(0.0)
+				inp.set_value(0.0)
+				# inp._var.set_value(0.0)

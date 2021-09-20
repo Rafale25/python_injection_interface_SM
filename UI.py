@@ -72,12 +72,12 @@ class InjectionUI:
 		self.create_modules_ui(module_controller)
 		self.create_outputs_ui(output_controller)
 
-	#NOTE: Payload of data are always a tuple with (string, Var)
+	## NOTE: Payload of data are always Var
 	def create_inputs_ui(self, input_controller):
 
+		# gamepad inputs
 		for joystick in input_controller.joysticks:
-		# joystick input
-			with dpg.collapsing_header(parent="window_input", label=joystick.get_name(), default_open=True):
+			with dpg.collapsing_header(parent="window_input", label=joystick.get_name(), default_open=False):
 				with dpg.table(header_row=True,
 					borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False):
 
@@ -90,7 +90,7 @@ class InjectionUI:
 						dpg.add_button(label=str(inp))
 						# with dpg.tooltip(parent=dpg.last_item()):
 						# 	dpg.add_text("LOT OF DATA HERE")
-						with dpg.drag_payload(parent=dpg.last_item(), drag_data=(str(inp), inp.get_var()), payload_type="data"):
+						with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
 							dpg.add_text(str(inp))
 
 
@@ -113,19 +113,60 @@ class InjectionUI:
 
 						dpg.add_table_next_column()
 
-		# Scrap Mechanic injector ouput
+		## ScrapMechanic injector-ouput
 		with dpg.collapsing_header(parent="window_input", label="SM Output", default_open=True):
 			pass
-			# with dpg.group(parent="window_input", id="injector_input_container"):
-			# 	pass
+			# with dpg.group(id="injector_input_container"):
 
-			# add output button
-			# dpg.add_button(label="+", width=-1, height=20)
+			# dpg.add_button(label="+", width=-1, height=20,
 			# 	callback=lambda: self.add_output(output_controller, None))
 
-		 # Misc (for adding custom values)
+		## Misc (for adding custom values)
+		def add_widget_misc(input_controller, parent, input_misc=None):
+			if input_misc == None:
+				input_misc = input_controller.add_misc()
+
+			with dpg.table(parent=parent, header_row=False,
+				borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False) as widget:
+
+				dpg.add_table_column(width_fixed=True)
+				dpg.add_table_column(width_fixed=True)
+				dpg.add_table_column(width_fixed=True)
+
+				drag_button = dpg.add_button(label=input_misc.get_name(), width=75)
+				with dpg.drag_payload(parent=dpg.last_item(), drag_data=input_misc, payload_type="data"):
+					dpg.add_text(input_misc.get_name())
+
+				# dpg.add_button(label="edit")
+				# with dpg.popup(dpg.last_item(), mousebutton=dpg.mvMouseButton_Left, modal=True) as modal:
+				# 	text_id = dpg.add_input_text(default_value="", width=300)
+				#
+				# 	def callback(id, data, udata):
+				# 		new_name = dpg.get_value(text_id)
+				# 		input_misc.set_name(new_name)
+				# 		dpg.set_item_label(drag_button, new_name)
+				# 		dpg.configure_item(modal, show=False)
+				#
+				# 	dpg.add_button(label="apply", callback=callback)
+
+				dpg.add_table_next_column()
+				dpg.add_input_float(default_value=0.0, width=125, min_value=-1e6, max_value=1e6, min_clamped=False, max_clamped=False,
+					callback=lambda id, data: input_misc.set_value(data))
+
+				def delete_callback(id, data):
+					dpg.delete_item(widget)
+					input_controller.inputs_misc.remove(input_misc)
+
+				dpg.add_table_next_column()
+				dpg.add_button(label="X", width=20, callback=delete_callback)
+				dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #themes are declared in initialize()
+
 		with dpg.collapsing_header(parent="window_input", label="Misc", default_open=True):
-			pass
+			with dpg.group() as misc_container:
+				pass
+
+			dpg.add_button(label="+", width=-50, height=20, indent=50,
+				callback=lambda: add_widget_misc(input_controller, misc_container, None))
 
 	def create_modules_ui(self, module_controller):
 		for module in module_controller.get_modules():
@@ -141,18 +182,17 @@ class InjectionUI:
 					dpg.add_table_column(label="", width_fixed=False)
 
 					for key, inp in module._inputs.items():
-
 						def drop_callback(id, data):
 							input_key, mod = dpg.get_item_user_data(id)
-							str, var = data #payload
 							if input_key in mod._inputs:
-								mod._inputs[input_key] = var
-							dpg.set_item_label(id, str)
+								mod._inputs[input_key] = data #input
+							dpg.set_item_label(id, data.get_name())
 
 						dpg.add_text(key)
 						dpg.add_table_next_column()
 						dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data",
 							user_data=(key, module), drop_callback=drop_callback)
+
 						dpg.add_table_next_column()
 
 				# OUT
