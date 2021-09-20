@@ -1,30 +1,44 @@
 #! /usr/bin/python3
 
+import time
 import dearpygui.dearpygui as dpg
 
-# with dpg.group(horizontal=True):
+# value = 0.0
 
-with dpg.window(label="Tutorial"):
-
-	dpg.add_text("value", id="OAO")
-
-	dpg.add_button(label="button", width=75, height=20, callback=lambda: dpg.set_value("OAO", "SALUT"))
-	dpg.add_button(label="button", width=75, height=20, callback=lambda: print("HEY"))
-	# dpg.add_visible_handler(parent=dpg.last_item(), callback=lambda id: dpg.set_item_label(dpg.last_item(), "42.0"))
+with dpg.value_registry():
+	# dpg.add_float_value(id="float_value")
+	# dpg.add_int_value(default_value=0, id="float_value")
+	dpg.add_string_value(default_value="Default string", id="string_value")
 
 
-	# dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data")
-	# with dpg.drag_payload(parent=dpg.last_item(), drag_data=["yolo", "salut"], payload_type="data"):
-	# 	dpg.add_text("input 1")
-	#
-	# def callback(id, inp, user_data):
-	# 	print(f"id is: {id}")
-	# 	print(f"inp is: {inp}")
-	# 	print(f"user_data is: {user_data}")
-	#
-	# dpg.add_text("input 1")
-	# dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data", drop_callback=callback, user_data="HEYY")
-	# dpg.add_button(label="", width=75, height=20, enabled=False, payload_type="data", drop_callback=lambda id, data: callback(id, data, "heyy"))
+with dpg.window(label="Tutorial", id="main_window"):
+	dpg.add_input_text(label="Text Input 1", source="string_value")
 
+	# dpg.add_input_float(default_value=0, source="float_value")
+	# dpg.add_text(label="0.0", source="")
+
+
+# dpg.setup_viewport()
+# dpg.set_viewport_title(title="SM Injector Interface")
+# dpg.set_viewport_width(200)
+# dpg.set_viewport_height(100)
+#
+# dpg.set_primary_window("main_window", True)
+#
+# while dpg.is_dearpygui_running():
+# 	value += 0.1
+#
+# 	dpg.render_dearpygui_frame()
+# 	time.sleep(1 / 40)
+
+# dpg.cleanup_dearpygui()
+
+dpg.start_dearpygui()
+
+with dpg.value_registry():
+	dpg.add_string_value(default_value="Default string", id="string_value")
+
+with dpg.window(label="Tutorial", id="main_window"):
+	dpg.add_input_text(label="Text Input 1", source="string_value")
 
 dpg.start_dearpygui()
