@@ -1,12 +1,12 @@
 class Output:
 	def __init__(self):
-		self._input = None # FloatVar
+		self._input = None #Var
 		self._input_key = ""
 		self._id = 0
-		self._checkbox = False
+		self._is_on = False
 
 	def switch(self):
-		self._checkbox = not self._checkbox
+		self._is_on = not self._is_on
 
 	def get_value(self):
 		if self._input:
@@ -30,7 +30,7 @@ class OutputController:
 
 	def send_outputs(self, injectionAPI):
 		for output in self.outputs:
-			if not output._checkbox: continue
+			if not output._is_on: continue
 			if output._input:
 				value = output._input.get_value()
 				if value != None:
