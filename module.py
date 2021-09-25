@@ -28,6 +28,10 @@ class Module:
 	# def get_outputs_dict(self):
 	# 	return self._outputs
 
+	def set_input(self, key, data):
+		if key in self._inputs:
+			self._inputs[key] = data #input
+
 	def add_input(self, key):
 		self._inputs[key] = None
 
