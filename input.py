@@ -14,7 +14,6 @@ class Input(Var):
 		self._id = id
 		self._input_type = input_type
 
-		# self._var = Var(0.0)
 		self._is_on = False
 		self._invert = False
 

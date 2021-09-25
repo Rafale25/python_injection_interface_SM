@@ -75,43 +75,44 @@ class InjectionUI:
 	## NOTE: Payload of data are always Var
 	def create_inputs_ui(self, input_controller):
 
-		# gamepad inputs
-		for joystick in input_controller.joysticks:
-			with dpg.collapsing_header(parent="window_input", label=joystick.get_name(), default_open=False):
-				with dpg.table(header_row=True,
-					borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False):
+		with dpg.collapsing_header(parent="window_input", label="Gamepads", default_open=False):
+			# gamepad inputs
+			for joystick in input_controller.joysticks:
+				with dpg.collapsing_header(label=joystick.get_name(), indent=6, default_open=False):
+					with dpg.table(header_row=True,
+						borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False):
 
-					dpg.add_table_column(label="", width_fixed=True)
-					dpg.add_table_column(label="on/off", width_fixed=True)
-					dpg.add_table_column(label="invert", width_fixed=True)
-					dpg.add_table_column(label="value", width_fixed=False)
+						dpg.add_table_column(label="", width_fixed=True)
+						dpg.add_table_column(label="on/off", width_fixed=True)
+						dpg.add_table_column(label="invert", width_fixed=True)
+						dpg.add_table_column(label="value", width_fixed=False)
 
-					for inp in input_controller.get_inputs():
-						dpg.add_button(label=str(inp))
-						# with dpg.tooltip(parent=dpg.last_item()):
-						# 	dpg.add_text("LOT OF DATA HERE")
-						with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
-							dpg.add_text(str(inp))
-
-
-						dpg.add_table_next_column()
-						dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.switch(), default_value=False)
-						dpg.add_table_next_column()
-						dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.invert(), default_value=False)
+						for inp in input_controller.get_inputs():
+							dpg.add_button(label=str(inp))
+							# with dpg.tooltip(parent=dpg.last_item()):
+							# 	dpg.add_text("LOT OF DATA HERE")
+							with dpg.drag_payload(parent=dpg.last_item(), drag_data=inp, payload_type="data"):
+								dpg.add_text(str(inp))
 
 
-						dpg.add_table_next_column()
-						# visible value callback
-						def callback(id, data, udata):
-							text_id, inpp = udata
-							dpg.set_value(text_id, "{:g}".format(inpp.get_value()))
+							dpg.add_table_next_column()
+							dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.switch(), default_value=False)
+							dpg.add_table_next_column()
+							dpg.add_checkbox(label="", user_data=inp, callback=lambda id, value, udata : udata.invert(), default_value=False)
 
-						dpg.add_text("0")
-						dpg.add_visible_handler(parent=dpg.last_item(),
-							user_data=(dpg.last_item(), inp),
-							callback=callback)
 
-						dpg.add_table_next_column()
+							dpg.add_table_next_column()
+							# visible value callback
+							def callback(id, data, udata):
+								text_id, inpp = udata
+								dpg.set_value(text_id, "{:g}".format(inpp.get_value()))
+
+							dpg.add_text("0")
+							dpg.add_visible_handler(parent=dpg.last_item(),
+								user_data=(dpg.last_item(), inp),
+								callback=callback)
+
+							dpg.add_table_next_column()
 
 		## ScrapMechanic injector-ouput
 		with dpg.collapsing_header(parent="window_input", label="SM Output", default_open=True):
