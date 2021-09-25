@@ -185,8 +185,7 @@ class InjectionUI:
 					for key, inp in module._inputs.items():
 						def drop_callback(id, data):
 							input_key, mod = dpg.get_item_user_data(id)
-							if input_key in mod._inputs:
-								mod._inputs[input_key] = data #input
+							mod.set_input(input_key, data)
 							dpg.set_item_label(id, data.get_name())
 
 						dpg.add_text(key)

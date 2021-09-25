@@ -58,19 +58,18 @@ class Input(Var):
 
 		if self._invert:
 			new_value = -new_value
-		# self._var.set_value(new_value)
 		self.set_value(new_value)
 
 class InputController:
 	def __init__(self):
-		#gamepads
+		## gamepads
 		self.inputs = []
 		self.joysticks = []
 
-		#SM_output
+		## SM_output
 		# self.inputs_SMoutput = []
 
-		#Misc
+		## Misc
 		self.inputs_misc = []
 
 	def scan_joysticks(self):
@@ -110,4 +109,3 @@ class InputController:
 				inp.update()
 			else:
 				inp.set_value(0.0)
-				# inp._var.set_value(0.0)
