@@ -32,7 +32,6 @@ class InjectionAPI:
 			print(err)
 
 	def cleanup(self):
-
 		if self.subprocess and self.subprocess.poll() == None:
 			self.subprocess.kill()
 
