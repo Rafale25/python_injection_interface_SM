@@ -70,7 +70,7 @@ class InputController:
         # self.inputs_SMoutput = []
 
         ## Misc
-        self.inputs_misc = []
+        self.inputs_misc = {} #{id, input_misc}
 
     def scan_joysticks(self):
         joystick_count = pygame.joystick.get_count()
@@ -78,9 +78,15 @@ class InputController:
 
     # add misc input to list
     def add_misc(self):
+        # find smallest unused id
+        l = [id for id in self.inputs_misc]
+        id = next(i for i, e in enumerate(sorted(l) + [ None ], 1) if i != e)
+
         misc = Var()
-        self.inputs_misc.append(misc)
-        return misc
+        misc.set_name(misc.get_name() + f" {id}")
+        # self.inputs_misc.append(misc)
+        self.inputs_misc[id] = misc
+        return id, misc
 
     # def add_SMoutput(self):
         # pass

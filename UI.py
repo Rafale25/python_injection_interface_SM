@@ -116,16 +116,21 @@ class InjectionUI:
 
         ## ScrapMechanic injector-ouput
         with dpg.collapsing_header(parent="window_input", label="SM Output", default_open=True):
-            pass
-            # with dpg.group(id="injector_input_container"):
+            with dpg.group(id="injector_input_container"):
+                pass
 
-            # dpg.add_button(label="+", width=-1, height=20,
-            #     callback=lambda: self.add_output(output_controller, None))
+            def add_widget_SMoutput(input_controller, parent):
+                pass
+
+            dpg.add_button(label="+", width=-50, height=20, indent=50,
+                callback=None)
+                # callback=lambda: self.add_widget_SMoutput(input_controller, None))
+
 
         ## Misc (for adding custom values)
         def add_widget_misc(input_controller, parent, input_misc=None):
             if input_misc == None:
-                input_misc = input_controller.add_misc()
+                id, input_misc = input_controller.add_misc()
 
             with dpg.table(parent=parent, header_row=False,
                 borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False) as widget:
@@ -154,12 +159,13 @@ class InjectionUI:
                 dpg.add_input_float(default_value=0.0, width=125, min_value=-1e6, max_value=1e6, min_clamped=False, max_clamped=False,
                     callback=lambda id, data: input_misc.set_value(data))
 
-                def delete_callback(id, data):
+                def delete_callback(id, data, udata):
+                    id = udata
                     dpg.delete_item(widget)
-                    input_controller.inputs_misc.remove(input_misc)
+                    del input_controller.inputs_misc[id]
 
                 dpg.add_table_next_column()
-                dpg.add_button(label="X", width=20, callback=delete_callback)
+                dpg.add_button(label="X", width=20, user_data=(id), callback=delete_callback)
                 dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #themes are declared in initialize()
 
         with dpg.collapsing_header(parent="window_input", label="Misc", default_open=True):
