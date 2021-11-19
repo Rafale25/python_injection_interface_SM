@@ -45,7 +45,7 @@ class InjectionApp:
 
             pygame.event.get() #used or it will freeze the program on windows
 
-            self.input_controller.update()
+            self.input_controller.update(self.injectionAPI)
             self.module_controller.compute()
 
             # print()

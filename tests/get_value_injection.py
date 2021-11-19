@@ -71,10 +71,6 @@ class InjectionAPI:
         print("length: ", length)
         print(unpacked_data)
 
-    def get_value(self, id):
-        self.ask_value(id)
-        self.recv_value()
-
 app = InjectionAPI()
 
 dpg.setup_viewport()

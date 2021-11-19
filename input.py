@@ -67,7 +67,7 @@ class InputController:
         self.joysticks = []
 
         ## SM_output
-        # self.inputs_SMoutput = []
+        self.inputs_SMoutput = {} #{id, SMoutput, SMid}
 
         ## Misc
         self.inputs_misc = {} #{id, input_misc}
@@ -75,6 +75,16 @@ class InputController:
     def scan_joysticks(self):
         joystick_count = pygame.joystick.get_count()
         self.joysticks = [pygame.joystick.Joystick(i) for i in range(joystick_count)]
+
+    def add_SMoutput(self):
+        # find smallest unused id
+        l = [id for id in self.inputs_SMoutput]
+        id = next(i for i, e in enumerate(sorted(l) + [ None ], 1) if i != e)
+
+        e = Var()
+        e.set_name(f"SMoutput {id}")
+        self.inputs_SMoutput[id] = [e, 0]
+        return id, e
 
     # add misc input to list
     def add_misc(self):
@@ -84,12 +94,8 @@ class InputController:
 
         misc = Var()
         misc.set_name(misc.get_name() + f" {id}")
-        # self.inputs_misc.append(misc)
         self.inputs_misc[id] = misc
         return id, misc
-
-    # def add_SMoutput(self):
-        # pass
 
     def init_inputs(self):
         for joystick in self.joysticks:
@@ -109,7 +115,18 @@ class InputController:
     def get_inputs(self):
         return self.inputs
 
-    def update(self):
+    def update(self, injectionAPI):
+        # get ids to ask value from game
+        ids = [SMid for id, (var, SMid) in self.inputs_SMoutput.items()]
+        if ids:
+            injectionAPI.ask_value(ids)
+            data = injectionAPI.recv_value()
+
+            for SMid1, value in data:
+                for id, (var, SMid2) in self.inputs_SMoutput.items():
+                    if SMid1 == SMid2:
+                        var.set_value(value)
+
         for inp in self.inputs:
             if inp.is_on():
                 inp.update()

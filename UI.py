@@ -116,16 +116,43 @@ class InjectionUI:
 
         ## ScrapMechanic injector-ouput
         with dpg.collapsing_header(parent="window_input", label="SM Output", default_open=True):
-            with dpg.group(id="injector_input_container"):
+            with dpg.group() as SMoutput_container:
                 pass
 
             def add_widget_SMoutput(input_controller, parent):
-                pass
+                id, SMoutput = input_controller.add_SMoutput()
+
+                with dpg.table(parent=parent, header_row=False,
+                    borders_innerH=False, borders_outerH=False, borders_innerV=False, borders_outerV=False) as widget:
+
+                    dpg.add_table_column(width_fixed=True)
+                    dpg.add_table_column(width_fixed=True)
+                    dpg.add_table_column(width_fixed=True)
+
+                    drag_button = dpg.add_button(label=SMoutput.get_name(), width=75)
+                    with dpg.drag_payload(parent=dpg.last_item(), drag_data=SMoutput, payload_type="data"):
+                        dpg.add_text(SMoutput.get_name())
+
+                    def callback(id, data, udata):
+                        smid = udata
+                        input_controller.inputs_SMoutput[smid][1] = data
+
+                    dpg.add_table_next_column()
+                    dpg.add_input_int(default_value=0, width=75, min_value=0, max_value=255, step=1,
+                        user_data=(id), callback=callback)
+
+                    def delete_callback(id, data, udata):
+                        id = udata
+                        dpg.delete_item(widget)
+                        del input_controller.inputs_SMoutput[id]
+
+                    dpg.add_table_next_column()
+                    dpg.add_button(label="X", width=20, user_data=(id), callback=delete_callback)
+                    dpg.set_item_theme(dpg.last_item(), "theme_button_delete") #themes are declared in initialize()
+
 
             dpg.add_button(label="+", width=-50, height=20, indent=50,
-                callback=None)
-                # callback=lambda: self.add_widget_SMoutput(input_controller, None))
-
+                callback=lambda: add_widget_SMoutput(input_controller, SMoutput_container))
 
         ## Misc (for adding custom values)
         def add_widget_misc(input_controller, parent, input_misc=None):

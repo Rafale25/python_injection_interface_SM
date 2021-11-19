@@ -12,7 +12,7 @@ class InjectionAPI:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM, 0)
         self.address = ('127.0.0.1', 25752)
 
-        self.socket.settimeout(1) #1 second timeout
+        self.socket.settimeout(0.001) #1 second timeout
 
     def start(self):
         try:
@@ -45,6 +45,33 @@ class InjectionAPI:
         packet = bytearray(b'\x01')
         packet.extend(struct.pack(">Id", id, value))
         self.socket.sendto(packet, self.address)
+
+    def ask_value(self, ids):
+        packet = bytearray(b'\x02')
+        for id in ids:
+            packet.extend(struct.pack(">I", id))
+
+        # print("ask_value packet: ", packet) #DEBUG
+        self.socket.sendto(packet, self.address)
+
+    def recv_value(self):
+        try:
+            data = self.socket.recv(1024)
+        except socket.error:
+            return []
+
+        # print("packet data: {}".format(data))
+
+        # -1 for 0x0A byte and divide by 12 because size of channel (4byte) + value(8bytes)
+        length = struct.unpack(">h", data[0:2])
+        length = (length[0] - 1) // 12
+
+        unpacked_data = struct.unpack(">" + "Id"*length, data[3:])
+        # unpacked_data = struct.unpack(">hBId", data)
+        print(unpacked_data)
+
+        result = list(zip(*[iter(data)]*2))
+        return result
 
     # def ask_value(self, id):
     #     packet = bytearray(b'\x02')
