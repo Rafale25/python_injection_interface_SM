@@ -61,44 +61,6 @@ class Input(Var):
         self.set_value(new_value)
 
 class InputController:
-<<<<<<< HEAD
-	def __init__(self):
-		self.inputs = []
-		self.joysticks = []
-
-	def scan_joysticks(self):
-		joystick_count = pygame.joystick.get_count()
-		self.joysticks = [pygame.joystick.Joystick(i) for i in range(joystick_count)]
-
-
-	def init_inputs(self):
-		for joystick in self.joysticks:
-			for i in range(joystick.get_numballs()):
-				inp = Input(joystick=joystick, id=i, input_type="numball")
-				self.inputs.append(inp)
-			for i in range(joystick.get_numaxes()):
-				inp = Input(joystick=joystick, id=i, input_type="axis")
-				self.inputs.append(inp)
-			for i in range(joystick.get_numbuttons()):
-				inp = Input(joystick=joystick, id=i, input_type="button")
-				self.inputs.append(inp)
-			for i in range(joystick.get_numhats()):
-				inp = Input(joystick=joystick, id=i, input_type="hat")
-				self.inputs.append(inp)
-
-	def get_inputs(self):
-		return self.inputs
-
-	def get_inputs_name_id(self):
-		return [str(inp) for inp in self.inputs]
-
-	def update(self):
-		for inp in self.inputs:
-			if inp.is_on():
-				inp.update()
-			else:
-				inp._var.set_value(0.0)
-=======
     def __init__(self):
         ## gamepads
         self.inputs = []
@@ -170,4 +132,3 @@ class InputController:
                 inp.update()
             else:
                 inp.set_value(0.0)
->>>>>>> beta
